@@ -122,7 +122,7 @@
   <div class="container">
     <div class="registration-form">
       <h1>Registro</h1>
-      <form name="registroForm" id="registroForm" action="post">
+      <form name="registroForm" id="registroForm" method="post">
         <div class="form-group">
           <label for="name">Nombre</label>
           <input type="text" class="form-control" id="nombre" name="nombre"
