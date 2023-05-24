@@ -76,7 +76,15 @@
             color: #940242;
             text-decoration: none !important;
         }
-        
+
+        .btn-check:checked+.btn,
+        .btn.active,
+        .btn.show,
+        .btn:first-child:active,
+        :not(.btn-check)+.btn:active {
+            color: #940242;
+            text-decoration: none !important;
+        }
     </style>
 </head>
 
