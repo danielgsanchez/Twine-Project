@@ -74,16 +74,6 @@
       font-family: 'Damion', cursive;
     }
 
-    @media (max-width: 768px) {
-      .twine-logo {
-        display: none;
-      }
-
-      .registration-form {
-        margin-right: 0;
-      }
-    }
-
     .error {
       color: red;
     }

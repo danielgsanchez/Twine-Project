@@ -14,12 +14,12 @@
   <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
+  <title>Twine - Página inicial</title>
   <style>
     .error {
       color: red;
     }
   </style>
-  <title>Twine - Página inicial</title>
 </head>
 
 <body>
