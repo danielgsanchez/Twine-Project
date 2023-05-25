@@ -1,3 +1,75 @@
+<?php
+require_once 'models/conn.php';
+
+// Verificar si se ha enviado el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Obtener los valores enviados
+  $nombre = $_REQUEST['nombre'];
+  $email = $_REQUEST['email'];
+  $pw = $_REQUEST['pw'];
+  $pwConfirm = $_REQUEST['pwConfirm'];
+
+  // Validar y escapar los valores recibidos
+  $nombre = mysqli_real_escape_string($conn, $nombre);
+  $email = mysqli_real_escape_string($conn, $email);
+  $pw = mysqli_real_escape_string($conn, $pw);
+  $pwConfirm = mysqli_real_escape_string($conn, $pwConfirm);
+
+  // Validar la longitud y características de la contraseña
+  if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
+    echo 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.';
+    exit;
+  }
+
+  // Verificar que los campos de pw y pwConfirm sean iguales
+  if ($pw !== $pwConfirm) {
+    echo 'Las contraseñas no coinciden.';
+    exit;
+  }
+
+  // Crear la consulta INSERT
+  $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
+
+  // Ejecutar la consulta
+  if (mysqli_query($conn, $query)) {
+    // Registro exitoso
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+              var successBox = document.createElement("div");
+              successBox.classList.add("success-box");
+              successBox.textContent = "Registro exitoso";
+
+              var closeButton = document.createElement("button");
+              closeButton.classList.add("close-button");
+              closeButton.innerHTML = "&#10006;";
+
+              successBox.appendChild(closeButton);
+              document.body.appendChild(successBox);
+
+              setTimeout(function() {
+                successBox.style.display = "none";
+              }, 3000);
+
+              closeButton.addEventListener("click", function() {
+                successBox.style.display = "none";
+              });
+            });
+          </script>';
+
+    // Restablecer los valores de los campos del formulario
+    $nombre = '';
+    $email = '';
+    $pw = '';
+    $pwConfirm = '';
+  } else {
+    // Error en la consulta
+    echo 'Error en el registro: ' . mysqli_error($conn);
+  }
+}
+
+mysqli_close($conn);
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -15,6 +87,28 @@
     .error {
       color: red;
     }
+    .success-box {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+  }
   </style>
 </head>
 
