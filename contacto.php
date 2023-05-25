@@ -1,4 +1,45 @@
 <?php
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $nombre = $_REQUEST["nombre"];
+  $nombre = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
+  $email = $_REQUEST["email"];
+  $email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+  $comentario = $_REQUEST["comentario"];
+  $comentario = htmlspecialchars($comentario, ENT_QUOTES, 'UTF-8');
+  
+  // Conexión a Mailtrap con PHPMailer
+  $mail = new PHPMailer();
+  $mail->isSMTP();
+  $mail->Host = 'sandbox.smtp.mailtrap.io';
+  $mail->SMTPAuth = true;
+  $mail->Username = '6558046cac0910';
+  $mail->Password = '96048df3ac7453';
+  $mail->SMTPSecure = 'tls';
+  $mail->Port = 2525;
+
+  try {
+    $mail->setFrom($email, $nombre);
+    $mail->addReplyTo($email, $nombre);
+    $mail->addAddress('contacto@twine.com', 'Twine');
+    $mail->CharSet = 'UTF-8';
+    $mail->Subject = "Comentario de $nombre";
+    $mail->Body = 'Nombre: '.$nombre."\n".'Email: '.$email."\n".'Comentario: '.$comentario;
+    $mail->send();
+
+    $message = '¡Tu comentario ha sido recibido!';
+    $messageClass = 'success';
+  } catch (Exception $e) {
+    $message = 'Se ha producido un error. Inténtalo de nuevo.';
+    $messageClass = 'error';
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -14,13 +55,32 @@
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
   <title>Twine - Contacta con nosotros</title>
+  <style>
+    .message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .success {
+      background-color: #a6e39d;
+      color: #155724;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
 </head>
 
 <body>
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.html">
+      <a class="navbar-brand text-decoration-none active" href="index.php">
         <img width="40" src="images/logo_vf.svg">
         Twine
       </a>
@@ -30,25 +90,25 @@
       <div class="collapse navbar-collapse" id="navegacion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="info.html">Información</a>
+            <a class="nav-link" href="info.php">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">Contacta con nosotros</a>
+            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="download.html">Descarga la app</a>
+            <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="registro.html" class="text-decoration-none text-white">
+            <a href="registro.php" class="text-decoration-none text-white">
               <button class="btn btn-primary me-2" type="button">
                 Regístrate
               </button>
             </a>
           </li>
           <li class="nav-item">
-            <a href="login.html" class="text-decoration-none text-white">
+            <a href="login.php" class="text-decoration-none text-white">
               <button class="btn btn-primary" type="button">
                 Conéctate
               </button>
@@ -72,27 +132,32 @@
       </p>
     </div>
     <br>
-    <form class="row g-3" id="form_contacto">
+    <form class="row g-3" id="form_contacto" action="contacto.php" method="post">
       <div class="col-md-6">
         <span><img src="icons/person-circle.svg"></span>
         <label for="nombre" class="form-label">Nombre: </label>
-        <input type="text" class="form-control" id="nombre" required>
+        <input type="text" class="form-control" id="nombre" name="nombre" required>
       </div>
       <div class="col-md-6">
         <span><img src="icons/envelope-heart-fill.svg"></span>
         <label for="email" class="form-label">Tu email: </label>
-        <input type="text" class="form-control" id="email" required>
+        <input type="text" class="form-control" id="email" name="email" required>
       </div>
       <div class="col-md-12">
         <span><img src="icons/send-fill.svg"></span>
         <label for="comentario" class="form-lab">¿Cómo podemos ayudarte?</label>
-        <textarea class="form-control" id="comentario" rows="3" required></textarea>
+        <textarea class="form-control" id="comentario" rows="3" name= "comentario" required></textarea>
       </div>
       <div class="col-md-12">
         <button type="submit" name="submit" class="btn btn-primary">Enviar</button>
       </div>
     </form>
   </div>
+<?php if (!empty($message)): ?>
+  <div class="message <?php echo $messageClass; ?>">
+    <?php echo $message; ?>
+  </div>
+<?php endif; ?>
   <!-- /FORMULARIO -->
   <!-- FOOTER -->
   <footer class="bg-light">
@@ -108,7 +173,7 @@
       </div>
     </div>
     <div class="text-center p-3" id="footercopy">
-      <h6><a href="index.html" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
+      <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
   </footer>
   <!-- /FOOTER -->
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>

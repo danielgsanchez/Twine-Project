@@ -20,7 +20,7 @@
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.html">
+      <a class="navbar-brand text-decoration-none active" href="index.php">
         <img width="40" src="images/logo_vf.svg">
         Twine
       </a>
@@ -30,25 +30,25 @@
       <div class="collapse navbar-collapse" id="navegacion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="info.html">Información</a>
+            <a class="nav-link" href="info.php">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">Contacta con nosotros</a>
+            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="download.html">Descarga la app</a>
+            <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="registro.html" class="text-decoration-none text-white">
+            <a href="registro.php" class="text-decoration-none text-white">
               <button class="btn btn-primary me-2" type="button">
                 Regístrate
               </button>
             </a>
           </li>
           <li class="nav-item">
-            <a href="login.html" class="text-decoration-none text-white">
+            <a href="login.php" class="text-decoration-none text-white">
               <button class="btn btn-primary" type="button">
                 Conéctate
               </button>
@@ -72,7 +72,7 @@
         intereses y valores.</p>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
         <button type="button" class="btn btn-primary btn-lg px-4 gap-3">
-          <a href="registro.html" class="text-decoration-none" style="color:white;">¡Únete!
+          <a href="registro.php" class="text-decoration-none" style="color:white;">¡Únete!
           </a>
         </button>
       </div>
@@ -132,7 +132,7 @@
           <div class="col-lg-6 mx-auto">
             <p class="lead mb-4">No importa quién seas o qué busques, Twine es el lugar para estar si quieres encontrar
               a alguien especial. Únete a nuestra comunidad hoy y descubre por qué somos la app de citas más guay del
-              mercado. ¡Nos vemos en <strong><a href="download.html" class="text-decoration-none">Twine!</a></strong>
+              mercado. ¡Nos vemos en <strong><a href="download.php" class="text-decoration-none">Twine!</a></strong>
             </p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
               <img class="d-block mx-auto mb-4 infoimg" src="images/app_4.png" style="width: 100%;">
@@ -224,7 +224,7 @@
               <li>Ubicación limitada</li>
               <li>Anuncios en la app</li>
             </ul>
-            <a href="registro.html" style="color:white" class="text-decoration-none">
+            <a href="registro.php" style="color:white" class="text-decoration-none">
               <button type="button" class="w-100 btn btn-lg btn-primary">
                 Regístrate gratis
               </button>
@@ -246,7 +246,7 @@
               <li>Passport: acceso a cualquier ubicación</li>
               <li>Sin anuncios</li>
             </ul>
-            <a href="pago.html" class="text-decoration-none">
+            <a href="pago.php" class="text-decoration-none">
               <button type="button" class="w-100 btn btn-lg goldenbtn">
                 ¡Hazte Oro!
               </button>
@@ -272,7 +272,7 @@
       </div>
     </div>
     <div class="text-center p-3" id="footercopy">
-      <h6><a href="index.html" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
+      <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
   </footer>
   <!-- /FOOTER -->
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>

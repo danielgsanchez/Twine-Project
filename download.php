@@ -27,7 +27,7 @@
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.html">
+      <a class="navbar-brand text-decoration-none active" href="index.php">
         <img width="40" src="images/logo_vf.svg">
         Twine
       </a>
@@ -37,24 +37,24 @@
       <div class="collapse navbar-collapse" id="navegacion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="info.html">Información</a>
+            <a class="nav-link" href="info.php">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">Contacta con nosotros</a>
+            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="download.html">Descarga la app</a>
+            <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <button class="btn btn-primary me-2" type="button">
-              <a href="registro.html" class="text-decoration-none text-white">Regístrate</a>
+              <a href="registro.php" class="text-decoration-none text-white">Regístrate</a>
             </button>
           </li>
           <li class="nav-item">
             <button class="btn btn-primary" type="button">
-              <a href="login.html" class="text-decoration-none text-white">Conéctate</a>
+              <a href="login.php" class="text-decoration-none text-white">Conéctate</a>
             </button>
           </li>
         </ul>
@@ -121,7 +121,7 @@
       </div>
     </div>
     <div class="text-center p-3" id="footercopy">
-      <h6><a href="index.html" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
+      <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
   </footer>
   <!-- /FOOTER -->
   <script type="text/javascript" src="bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>

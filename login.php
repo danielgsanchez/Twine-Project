@@ -1,4 +1,47 @@
 <?php
+require_once 'models/conn.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Obtener los valores ingresados en el formulario
+  $email = $_REQUEST['email'];
+  $password = $_REQUEST['password'];
+
+  // Preparar la consulta utilizando sentencias preparadas
+  $password = md5($password);
+  $query = "SELECT * FROM twn_users WHERE email = ? AND password = ?";
+  $statement = $conn->prepare($query);
+
+  // Verificar si la preparación de la consulta fue exitosa
+  if ($statement) {
+    // Sanitizar los valores ingresados
+    $statement->bind_param('ss', $email, $password);
+
+    // Ejecutar la consulta
+    $statement->execute();
+
+    // Obtener el resultado de la consulta
+    $result = $statement->get_result();
+
+    // Verificar si se encontraron coincidencias
+    if ($result->num_rows == 1) {
+      // Credenciales correctas, redirigir al usuario a home.php
+      header('Location: home.php');
+      exit();
+    } else {
+      // Credenciales incorrectas, mostrar mensaje de error
+      $error = "Credenciales incorrectas";
+    }
+
+    // Cerrar el statement
+    $statement->close();
+  } else {
+    // Error en la preparación de la consulta
+    die('Error en la consulta: ' . $conn->error);
+  }
+
+  // Cerrar la conexión a la base de datos
+  mysqli_close($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -98,7 +141,7 @@
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.html">
+      <a class="navbar-brand text-decoration-none active" href="index.php">
         <img width="40" src="images/logo_vf.svg">
         Twine
       </a>
@@ -108,25 +151,25 @@
       <div class="collapse navbar-collapse" id="navegacion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="info.html">Información</a>
+            <a class="nav-link" href="info.php">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">Contacta con nosotros</a>
+            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="download.html">Descarga la app</a>
+            <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="registro.html" class="text-decoration-none text-white">
+            <a href="registro.php" class="text-decoration-none text-white">
               <button class="btn btn-primary me-2" type="button">
                 Regístrate
               </button>
             </a>
           </li>
           <li class="nav-item">
-            <a href="login.html" class="text-decoration-none text-white">
+            <a href="login.php" class="text-decoration-none text-white">
               <button class="btn btn-primary" type="button">
                 Conéctate
               </button>
@@ -141,7 +184,7 @@
   <div class="container">
     <div class="login-form">
       <h1>Iniciar sesión</h1>
-      <form>
+      <form method="post">
         <div class="form-group">
           <label for="email">Correo electrónico</label>
           <input type="email" id="email" name="email" class="form-control" placeholder="Tu correo electrónico" required>
@@ -151,7 +194,11 @@
           <input type="password" id="password" name="password" class="form-control" placeholder="Tu contraseña"
             required>
         </div>
-        <p>¿Has olvidado tu contraseña?</p>
+        <?php if (isset($error)): ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php endif; ?>
+        <a href="newpwd.php">¿Has olvidado tu contraseña?</a>
+        <br/><br/>
         <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
       </form>
     </div>

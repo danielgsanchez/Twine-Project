@@ -27,7 +27,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
   }
 
-  // Crear la consulta INSERT
+  // Verificar si el email ya está registrado
+  $emailExistsQuery = "SELECT * FROM twn_users WHERE email = '$email'";
+  $emailExistsResult = mysqli_query($conn, $emailExistsQuery);
+
+  if (mysqli_num_rows($emailExistsResult) > 0) {
+    // El email ya ha sido registrado
+    echo '<script>
+            document.addEventListener("DOMContentLoaded", function() {
+              var errorBox = document.createElement("div");
+              errorBox.classList.add("error-box");
+              errorBox.textContent = "¡Ese email ya ha sido registrado!";
+
+              var closeButton = document.createElement("button");
+              closeButton.classList.add("close-button");
+              closeButton.innerHTML = "&#10006;";
+
+              errorBox.appendChild(closeButton);
+              document.body.appendChild(errorBox);
+
+              setTimeout(function() {
+                errorBox.style.display = "none";
+              }, 3000);
+
+              closeButton.addEventListener("click", function() {
+                errorBox.style.display = "none";
+              });
+            });
+          </script>';
+  } else {
+    // Crear la consulta INSERT + pw hasheada
+  $pw = md5($pw);
   $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
 
   // Ejecutar la consulta
@@ -62,12 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pw = '';
     $pwConfirm = '';
   } else {
-    // Error en la consulta
-    echo 'Error en el registro: ' . mysqli_error($conn);
+    // Error al ejecutar la consulta
+    echo 'Error al registrar el usuario: ' . mysqli_error($conn);
   }
 }
 
 mysqli_close($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -80,13 +111,14 @@ mysqli_close($conn);
   <link rel="icon" type="image/x-icon" href="icons/favicon.png">
   <link rel="stylesheet" type="text/css" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="style.css" />
-  <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
+  <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <title>Twine - Página inicial</title>
   <style>
     .error {
       color: red;
     }
+
     .success-box {
     position: fixed;
     top: 20px;
@@ -99,7 +131,19 @@ mysqli_close($conn);
     z-index: 9999;
   }
 
-  .close-button {
+  .error-box {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: #ffdddd;
+  color: #ff0000;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.close-button {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -116,7 +160,7 @@ mysqli_close($conn);
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
     <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.html">
+      <a class="navbar-brand text-decoration-none active" href="index.php">
         <img width="40" src="images/logo_vf.svg">
         Twine
       </a>
@@ -126,25 +170,25 @@ mysqli_close($conn);
       <div class="collapse navbar-collapse" id="navegacion">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="info.html">Información</a>
+            <a class="nav-link" href="info.php">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="contacto.html">Contacta con nosotros</a>
+            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="download.html">Descarga la app</a>
+            <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a href="registro.html" class="text-decoration-none text-white">
+            <a href="registro.php" class="text-decoration-none text-white">
               <button class="btn btn-primary me-2" type="button">
                 Regístrate
               </button>
             </a>
           </li>
           <li class="nav-item">
-            <a href="login.html" class="text-decoration-none text-white">
+            <a href="login.php" class="text-decoration-none text-white">
               <button class="btn btn-primary" type="button">
                 Conéctate
               </button>
@@ -227,11 +271,11 @@ mysqli_close($conn);
       </div>
     </div>
     <div class="text-center p-3" id="footercopy">
-      <h6><a href="index.html" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
+      <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright</h6>
   </footer>
   <!-- /FOOTER -->
-  <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
+  <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       // Referenciar los elementos del formulario

@@ -132,31 +132,31 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <a href="home.html">
+            <a href="home.php">
                 <img src="images/logo_vf.svg" style="width: 50px;">
             </a>
         </div>
         <ul class="sidebar-icons">
             <li>
-                <a href="perfil.html">
+                <a href="perfil.php">
                     <span class="icon"><i class="fas fa-user"></i></span>
                     <span class="text">Perfil</span>
                 </a>
             </li>
             <li>
-                <a href="chats.html">
+                <a href="chats.php">
                     <span class="icon"><i class="fas fa-comments"></i></span>
                     <span class="text">Chats</span>
                 </a>
             </li>
             <li>
-                <a href="explorar.html">
+                <a href="explorar.php">
                     <span class="icon"><i class="fas fa-search"></i></span>
                     <span class="text">Explorar</span>
                 </a>
             </li>
             <li>
-                <a href="likes.html">
+                <a href="likes.php">
                     <span class="icon"><i class="fas fa-heart"></i></span>
                     <span class="text">Likes</span>
                 </a>
@@ -168,7 +168,7 @@
             <h2>Hazte Oro</h2>
             <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
             <button class="btn btn-primary" type="button">
-                <a href="pago.html" class="text-decoration-none text-white">Suscríbete</a>
+                <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
             </button>
         </div>
     </div>
