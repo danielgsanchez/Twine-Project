@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once "models/conn.php";
 require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once 'models/conn.php';
 
 // Verificar si se ha enviado el formulario

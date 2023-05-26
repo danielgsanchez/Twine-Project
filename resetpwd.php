@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once "models/conn.php";
 
 if( (!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"])) ){

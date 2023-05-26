@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 ?>
 
 <!DOCTYPE html>
@@ -55,8 +57,8 @@
 
 <body>
   <div class="container error-container">
-    <h1 class="error-title">Error 404</h1>
-    <p class="error-message">Lo sentimos, la página que estás buscando no se encuentra.</p>
+    <h1 class="error-title">¡Ooooops!</h1>
+    <p class="error-message">Lo sentimos. La página a la que has intentado acceder no está disponible.</p>
     <p class="error-message">Por favor, regresa a <a href="index.php">Twine</a> o intenta nuevamente más tarde.</p>
   </div>
 </body>
