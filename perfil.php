@@ -48,7 +48,6 @@ if (empty($_SESSION["email"])) {
             text-align: center;
             padding: 20px;
             color: #000;
-            /* Cambiar el color del logo a dark */
             font-size: 24px;
         }
 
@@ -66,7 +65,6 @@ if (empty($_SESSION["email"])) {
 
         .sidebar-icons a {
             color: #000;
-            /* Cambiar el color de los iconos a dark */
             font-size: 20px;
             display: inline-block;
             vertical-align: middle;
@@ -79,12 +77,10 @@ if (empty($_SESSION["email"])) {
 
         .sidebar-icons a:hover {
             background-color: #e9ecef;
-            /* Cambiar el color de fondo en hover a un tono más claro */
         }
 
         .sidebar-icons a:active {
             background-color: #c6d2d9;
-            /* Cambiar el color de fondo en active a un tono más oscuro */
         }
 
         .sidebar-expanded .sidebar-icons a .icon {
@@ -142,10 +138,10 @@ if (empty($_SESSION["email"])) {
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
-                <img src="images/logo_vf.svg" style="width: 50px;">
+                <img src="images/logo_vf.svg">
             </a>
         </div>
         <ul class="sidebar-icons">
@@ -167,12 +163,15 @@ if (empty($_SESSION["email"])) {
                     <span class="text">Explorar</span>
                 </a>
             </li>
-            <li>
-                <a href="likes.php">
-                    <span class="icon"><i class="fas fa-heart"></i></span>
-                    <span class="text">Likes</span>
-                </a>
-            </li>
+            <?php
+            if ((isset($goldSub)) && ($goldSub == 1)) { ?>
+                <li>
+                    <a href="likes.php">
+                        <span class="icon"><i class="fas fa-heart"></i></span>
+                        <span class="text">Likes</span>
+                    </a>
+                </li>
+            <?php } ?>
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>

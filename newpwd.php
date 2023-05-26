@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result == true) {
       // Actualización exitosa
       //¡¡¡¡OJO A LA RUTA!!!
-      $link = "<a href=localhost/pfinal/resetpwd.php?key=" . $email . "&tkn=" . $tkn . "'>haz click aquí</a>";
+      $link = "<a href='localhost/pfinal/resetpwd.php?key=".$email."&tkn=".$tkn."'>haz click aquí</a>";
       // Conexión a Mailtrap con PHPMailer
       $mail = new PHPMailer();
       $mail->isSMTP();

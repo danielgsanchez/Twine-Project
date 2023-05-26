@@ -19,13 +19,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Validar la longitud y características de la contraseña
   if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
-    echo 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.';
+    echo "
+    <script>
+    var pwError = document.getElementById('pwError');
+    pwError.textContent = 'La contraseña debe tener al menos 8 caracteres';
+    pwError.classList.add('error');
+    pwInput.focus();
+    </script>
+    ";
     exit;
   }
 
   // Verificar que los campos de pw y pwConfirm sean iguales
   if ($pw !== $pwConfirm) {
-    echo 'Las contraseñas no coinciden.';
+    echo "
+    <script>
+    var pwConfirmError = document.getElementById('pwConfirmError');
+    pwConfirmError.textContent = 'Las contraseñas no coinciden';
+    pwConfirmError.classList.add('error');
+    pwConfirmInput.focus();
+    </script>
+    ";
     exit;
   }
 

@@ -6,6 +6,26 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
+require_once "models/conn.php";
+
+// Consulta para comprobar si es usuario de Twine Gold
+$email = $_SESSION["email"];
+$sql = "SELECT gold_sub FROM twn_users WHERE email = '$email'";
+
+// Ejecutar la consulta
+$result = $conn->query($sql);
+
+// Verificar si se encontró el usuario
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $goldSub = $row['gold_sub'];
+}
+
+if ($goldSub == 0){
+    header("Location: home.php");
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -137,10 +157,10 @@ if (empty($_SESSION["email"])) {
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
-                <img src="images/logo_vf.svg" style="width: 50px;">
+                <img src="images/logo_vf.svg">
             </a>
         </div>
         <ul class="sidebar-icons">
@@ -162,12 +182,15 @@ if (empty($_SESSION["email"])) {
                     <span class="text">Explorar</span>
                 </a>
             </li>
-            <li>
-                <a href="likes.php">
-                    <span class="icon"><i class="fas fa-heart"></i></span>
-                    <span class="text">Likes</span>
-                </a>
-            </li>
+            <?php
+            if ((isset($goldSub)) && ($goldSub == 1)) { ?>
+                <li>
+                    <a href="likes.php">
+                        <span class="icon"><i class="fas fa-heart"></i></span>
+                        <span class="text">Likes</span>
+                    </a>
+                </li>
+            <?php } ?>
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>
@@ -177,7 +200,7 @@ if (empty($_SESSION["email"])) {
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectarse</span>
+                    <span class="text">Desconectar</span>
                 </a>
             </li>
         </ul>
