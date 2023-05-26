@@ -59,13 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </script>';
   } else {
     // Crear la consulta INSERT + pw hasheada
-  $pw = md5($pw);
-  $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
+    $pw = md5($pw);
+    $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
 
-  // Ejecutar la consulta
-  if (mysqli_query($conn, $query)) {
-    // Registro exitoso
-    echo '<script>
+    // Ejecutar la consulta
+    if (mysqli_query($conn, $query)) {
+      // Registro exitoso
+      echo '<script>
             document.addEventListener("DOMContentLoaded", function() {
               var successBox = document.createElement("div");
               successBox.classList.add("success-box");
@@ -88,18 +88,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
           </script>';
 
-    // Restablecer los valores de los campos del formulario
-    $nombre = '';
-    $email = '';
-    $pw = '';
-    $pwConfirm = '';
-  } else {
-    // Error al ejecutar la consulta
-    echo 'Error al registrar el usuario: ' . mysqli_error($conn);
+      // Restablecer los valores de los campos del formulario
+      $nombre = '';
+      $email = '';
+      $pw = '';
+      $pwConfirm = '';
+    } else {
+      // Error al ejecutar la consulta
+      echo 'Error al registrar el usuario: ' . mysqli_error($conn);
+    }
   }
-}
 
-mysqli_close($conn);
+  mysqli_close($conn);
 }
 ?>
 
@@ -112,6 +112,7 @@ mysqli_close($conn);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="icons/favicon.png">
   <link rel="stylesheet" type="text/css" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
@@ -122,39 +123,39 @@ mysqli_close($conn);
     }
 
     .success-box {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    background-color: #28a745;
-    color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 9999;
-  }
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background-color: #28a745;
+      color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 9999;
+    }
 
-  .error-box {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 10px;
-  background-color: #ffdddd;
-  color: #ff0000;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  z-index: 9999;
-}
+    .error-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background-color: #ffdddd;
+      color: #ff0000;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      z-index: 9999;
+    }
 
-.close-button {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-  }
+    .close-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -181,22 +182,34 @@ mysqli_close($conn);
             <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a href="registro.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary me-2" type="button">
-                Regístrate
-              </button>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="login.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary" type="button">
-                Conéctate
-              </button>
-            </a>
-          </li>
-        </ul>
+        <?php
+        if (empty($_SESSION["email"])) { ?>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="registro.php" class="text-decoration-none text-white">
+                <button class="btn btn-primary me-2" type="button">
+                  Regístrate
+                </button>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="login.php" class="text-decoration-none text-white">
+                <button class="btn btn-primary" type="button">
+                  Conéctate
+                </button>
+              </a>
+            </li>
+          </ul>
+        <?php } else { ?>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="home.php" class="text-decoration-none" style="color: black;">
+                <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+              </a>
+            </li>
+          </ul>
+        <?php }
+        ?>
       </div>
     </div>
   </nav>
@@ -222,21 +235,18 @@ mysqli_close($conn);
           <form id="registroForm" action="index.php" method="post">
             <div class="mb-3">
               <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" name="nombre"
-                placeholder="Será como te conozcan los demás en Twine" required>
+              <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Será como te conozcan los demás en Twine" required>
             </div>
             <br />
             <div class="mb-3">
               <label for="email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="email" name="email"
-                placeholder="Enviaremos un código de confirmación a tu correo" required>
+              <input type="email" class="form-control" id="email" name="email" placeholder="Enviaremos un código de confirmación a tu correo" required>
               <div id="emailHelp" class="form-text">No compartiremos tu correo electrónico con nadie más.</div>
             </div>
             <br />
             <div class="mb-3">
               <label for="pw" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="pw" name="pw" placeholder="Elige una contraseña segura"
-                required>
+              <input type="password" class="form-control" id="pw" name="pw" placeholder="Elige una contraseña segura" required>
               <div id="pwHelp" class="form-text">Tu contraseña debe ser de al menos 8 caracteres, alfanumérica, con
                 mayúsculas y minúsculas</div>
               <span id="pwError" class="error"></span>
@@ -244,8 +254,7 @@ mysqli_close($conn);
             <br />
             <div class="mb-3">
               <label for="pwConfirm" class="form-label">Confirmar contraseña</label>
-              <input type="password" class="form-control" id="pwConfirm" name="pwConfirm" placeholder="¡Esta es fácil!"
-                required>
+              <input type="password" class="form-control" id="pwConfirm" name="pwConfirm" placeholder="¡Esta es fácil!" required>
               <div id="pwConfirmHelp" class="form-text">Tu contraseña y este campo deben coincidir</div>
               <span id="pwConfirmError" class="error"></span>
             </div>
@@ -279,7 +288,7 @@ mysqli_close($conn);
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
       // Referenciar los elementos del formulario
       var form = document.getElementById('registroForm');
       var pwInput = document.getElementById('pw');
@@ -288,7 +297,7 @@ mysqli_close($conn);
       var pwConfirmError = document.getElementById('pwConfirmError');
 
       // Agregar un evento al envío del formulario para realizar la validación en el lado del cliente
-      form.addEventListener('submit', function (event) {
+      form.addEventListener('submit', function(event) {
         pwError.textContent = ''; // Limpiar mensaje de error anterior
         pwConfirmError.textContent = ''; // Limpiar mensaje de error anterior
 

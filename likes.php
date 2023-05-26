@@ -132,7 +132,7 @@ session_start();
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg" style="width: 50px;">
@@ -161,6 +161,18 @@ session_start();
                 <a href="likes.php">
                     <span class="icon"><i class="fas fa-heart"></i></span>
                     <span class="text">Likes</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.php">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span class="text">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="logout.php">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                    <span class="text">Desconectarse</span>
                 </a>
             </li>
         </ul>

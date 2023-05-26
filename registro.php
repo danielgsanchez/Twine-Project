@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!empty($_SESSION["email"])){
+    header("Location: home.php");
+    exit;
+}
+
 require_once 'models/conn.php';
 
 // Verificar si se ha enviado el formulario

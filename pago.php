@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (empty($_SESSION["email"])){
+    header("Location: index.php");
+    exit;
+}
+
 require_once "models/conn.php";
 
 

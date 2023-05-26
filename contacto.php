@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="icons/favicon.png">
   <link rel="stylesheet" type="text/css" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
@@ -101,22 +102,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a class="nav-link" href="download.php">Descarga la app</a>
           </li>
         </ul>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a href="registro.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary me-2" type="button">
-                Regístrate
-              </button>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="login.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary" type="button">
-                Conéctate
-              </button>
-            </a>
-          </li>
-        </ul>
+        <?php
+        if (empty($_SESSION["email"])) { ?>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="registro.php" class="text-decoration-none text-white">
+                <button class="btn btn-primary me-2" type="button">
+                  Regístrate
+                </button>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="login.php" class="text-decoration-none text-white">
+                <button class="btn btn-primary" type="button">
+                  Conéctate
+                </button>
+              </a>
+            </li>
+          </ul>
+        <?php } else { ?>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a href="home.php" class="text-decoration-none" style="color: black;">
+                <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+              </a>
+            </li>
+          </ul>
+        <?php }
+        ?>
       </div>
     </div>
   </nav>

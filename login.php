@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (!empty($_SESSION["email"])){
+  header("Location: home.php");
+  exit;
+}
+
 require_once 'models/conn.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
