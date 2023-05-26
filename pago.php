@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (empty($_SESSION["email"])){
+if (empty($_SESSION["email"])) {
     header("Location: index.php");
     exit;
 }
@@ -138,22 +138,34 @@ if (isset($_SESSION['email'])) {
                                     <a class="nav-link" href="download.php">Descarga la app</a>
                                 </li>
                             </ul>
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item">
-                                    <a href="registro.php" class="text-decoration-none text-white">
-                                        <button class="btn btn-primary me-2" type="button">
-                                            Regístrate
-                                        </button>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="login.php" class="text-decoration-none text-white">
-                                        <button class="btn btn-primary" type="button">
-                                            Conéctate
-                                        </button>
-                                    </a>
-                                </li>
-                            </ul>
+                            <?php
+                            if (empty($_SESSION["email"])) { ?>
+                                <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item">
+                                        <a href="registro.php" class="text-decoration-none text-white">
+                                            <button class="btn btn-primary me-2" type="button">
+                                                Regístrate
+                                            </button>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="login.php" class="text-decoration-none text-white">
+                                            <button class="btn btn-primary" type="button">
+                                                Conéctate
+                                            </button>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php } else { ?>
+                                <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item">
+                                        <a href="home.php" class="text-decoration-none" style="color: black;">
+                                            <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php }
+                            ?>
                         </div>
                     </div>
                 </nav>
@@ -205,7 +217,7 @@ if (isset($_SESSION['email'])) {
                                                                     <img src="icons/credit-card-2-back-fill.svg" style="filter: invert();">
                                                                 </span>
                                                             </span>
-                                                            <input type="text" class="form-control" id="creditCardNumber" placeholder="Ingresa el número de tu tarjeta de crédito">
+                                                            <input type="text" class="form-control" id="creditCardNumber" placeholder="Ingresa el número de tu tarjeta de crédito" pattern="[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}\s?[0-9]{4}" title="Introduce un número de tarjeta de crédito válido">
                                                         </div>
                                                         <div class="input-group mb-3">
                                                             <span class="input-group-prepend">
@@ -223,7 +235,7 @@ if (isset($_SESSION['email'])) {
                                                                             <i class="fas fa-calendar-alt"></i>
                                                                         </span>
                                                                     </span>
-                                                                    <input type="text" class="form-control" id="expirationDate" placeholder="MM/AA">
+                                                                    <input type="text" class="form-control" id="expirationDate" placeholder="MM/AA" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Introduce una fecha de expiración válida (MM/AA)">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
@@ -233,7 +245,7 @@ if (isset($_SESSION['email'])) {
                                                                             <i class="fas fa-lock"></i>
                                                                         </span>
                                                                     </span>
-                                                                    <input type="text" class="form-control" id="cvv" placeholder="CVV/CVC">
+                                                                    <input type="text" class="form-control" id="cvv" placeholder="CVV/CVC" pattern="[0-9]{3,4}" title="Introduce un código CVV/CVC válido">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -275,7 +287,7 @@ if (isset($_SESSION['email'])) {
                                             <p id="precioDescuento" class="form-control-plaintext mb-0 fw-bold"></p>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" name="paySub">Realizar el pago</button>
+                                    <button type="submit" class="btn btn-primary" name="paySub" id="payButton">Realizar el pago</button>
                                 </form>
                             </div>
                         </div>
@@ -335,122 +347,133 @@ if (isset($_SESSION['email'])) {
             </html>
         <?php
         } elseif ($goldSub == 1) { ?>
-<!DOCTYPE html>
-<html>
+            <!DOCTYPE html>
+            <html>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="icons/favicon.png">
-  <link rel="stylesheet" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Twine - Finalizar pago</title>
-  <style>
-    body {
-      background-color: #ff92c6;
-    }
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="icon" type="image/x-icon" href="icons/favicon.png">
+                <link rel="stylesheet" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+                <link rel="stylesheet" href="style.css" />
+                <title>Twine - Finalizar pago</title>
+                <style>
+                    body {
+                        background-color: #ff92c6;
+                    }
 
-    .gold-card {
-      width: 400px;
-      background-color: gold;
-      padding: 20px;
-      text-align: center;
-      border-radius: 10px;
-      margin: 0 auto;
-      margin-top: 200px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+                    .gold-card {
+                        width: 400px;
+                        background-color: gold;
+                        padding: 20px;
+                        text-align: center;
+                        border-radius: 10px;
+                        margin: 0 auto;
+                        margin-top: 200px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
 
-    .gold-card h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
+                    .gold-card h2 {
+                        font-size: 24px;
+                        margin-bottom: 20px;
+                    }
 
-    .gold-card p {
-      font-size: 18px;
-    }
-  </style>
-</head>
+                    .gold-card p {
+                        font-size: 18px;
+                    }
+                </style>
+            </head>
 
-<body>
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
-    <div class="container-fluid">
-      <a class="navbar-brand text-decoration-none active" href="index.php">
-        <img width="40" src="images/logo_vf.svg">
-        Twine
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navegacion">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navegacion">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="info.php">Información</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="download.php">Descarga la app</a>
-          </li>
-        </ul>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a href="registro.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary me-2" type="button">
-                Regístrate
-              </button>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="login.php" class="text-decoration-none text-white">
-              <button class="btn btn-primary" type="button">
-                Conéctate
-              </button>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- /NAVBAR -->
-  <div class="container mt-5">
-    <div class="row justify-content-center" style="height: 100vh;">
-      <div class="col-md-6">
-        <div class="gold-card">
-          <h2>¡Ya perteneces a Twine Gold!</h2>
-          <p>Disfruta de tus ventajas! ;)</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- FOOTER -->
-  <footer class="bg-light">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12 text-center">
-          <div class="justify-content-between p-3">
-            <a href="https://es-es.facebook.com/" class="p-3"><img src="icons/facebook.svg" width="30px"></a>
-            <a href="https://twitter.com/" class="p-3"><img src="icons/twitter.svg" width="30px"></a>
-            <a href="https://www.instagram.com/" class="p-3"><img src="icons/instagram.svg" width="30px"></a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="text-center p-3" id="footercopy">
-      <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright
-      </h6>
-    </div>
-  </footer>
-  <!-- /FOOTER -->
+            <body>
+                <!-- NAVBAR -->
+                <nav class="navbar navbar-expand-md navbar-light bg-light p-2 fixed-top" id="navbar">
+                    <div class="container-fluid">
+                        <a class="navbar-brand text-decoration-none active" href="index.php">
+                            <img width="40" src="images/logo_vf.svg">
+                            Twine
+                        </a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navegacion">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navegacion">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="info.php">Información</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="contacto.php">Contacta con nosotros</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="download.php">Descarga la app</a>
+                                </li>
+                            </ul>
+                            <?php
+                            if (empty($_SESSION["email"])) { ?>
+                                <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item">
+                                        <a href="registro.php" class="text-decoration-none text-white">
+                                            <button class="btn btn-primary me-2" type="button">
+                                                Regístrate
+                                            </button>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="login.php" class="text-decoration-none text-white">
+                                            <button class="btn btn-primary" type="button">
+                                                Conéctate
+                                            </button>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php } else { ?>
+                                <ul class="navbar-nav ms-auto">
+                                    <li class="nav-item">
+                                        <a href="home.php" class="text-decoration-none" style="color: black;">
+                                            <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            <?php }
+                            ?>
+                        </div>
+                    </div>
+                </nav>
+                <!-- /NAVBAR -->
+                <div class="container mt-5">
+                    <div class="row justify-content-center" style="height: 100vh;">
+                        <div class="col-md-6">
+                            <div class="gold-card">
+                                <h2>¡Ya perteneces a Twine Gold!</h2>
+                                <p>Disfruta de tus ventajas! ;)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- FOOTER -->
+                <footer class="bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <div class="justify-content-between p-3">
+                                    <a href="https://es-es.facebook.com/" class="p-3"><img src="icons/facebook.svg" width="30px"></a>
+                                    <a href="https://twitter.com/" class="p-3"><img src="icons/twitter.svg" width="30px"></a>
+                                    <a href="https://www.instagram.com/" class="p-3"><img src="icons/instagram.svg" width="30px"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center p-3" id="footercopy">
+                        <h6><a href="index.php" class="text-decoration-none">Twine</a> © 2023 Copyright
+                        </h6>
+                    </div>
+                </footer>
+                <!-- /FOOTER -->
+                <script src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.min.js"></script>
+            </body>
 
-  <script src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+            </html>
 
 <?php } else {
             header("Location: error.php");

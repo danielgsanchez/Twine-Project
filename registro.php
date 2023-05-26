@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!empty($_SESSION["email"])){
+if (!empty($_SESSION["email"])) {
     header("Location: home.php");
     exit;
 }
@@ -10,37 +10,37 @@ require_once 'models/conn.php';
 
 // Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Obtener los valores enviados
-  $nombre = $_REQUEST['nombre'];
-  $email = $_REQUEST['email'];
-  $pw = $_REQUEST['pw'];
-  $pwConfirm = $_REQUEST['pwConfirm'];
+    // Obtener los valores enviados
+    $nombre = $_REQUEST['nombre'];
+    $email = $_REQUEST['email'];
+    $pw = $_REQUEST['pw'];
+    $pwConfirm = $_REQUEST['pwConfirm'];
 
-  // Validar y escapar los valores recibidos
-  $nombre = mysqli_real_escape_string($conn, $nombre);
-  $email = mysqli_real_escape_string($conn, $email);
-  $pw = mysqli_real_escape_string($conn, $pw);
-  $pwConfirm = mysqli_real_escape_string($conn, $pwConfirm);
+    // Validar y escapar los valores recibidos
+    $nombre = mysqli_real_escape_string($conn, $nombre);
+    $email = mysqli_real_escape_string($conn, $email);
+    $pw = mysqli_real_escape_string($conn, $pw);
+    $pwConfirm = mysqli_real_escape_string($conn, $pwConfirm);
 
-  // Validar la longitud y características de la contraseña
-  if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
-    echo 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.';
-    exit;
-  }
+    // Validar la longitud y características de la contraseña
+    if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
+        echo 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.';
+        exit;
+    }
 
-  // Verificar que los campos de pw y pwConfirm sean iguales
-  if ($pw !== $pwConfirm) {
-    echo 'Las contraseñas no coinciden.';
-    exit;
-  }
+    // Verificar que los campos de pw y pwConfirm sean iguales
+    if ($pw !== $pwConfirm) {
+        echo 'Las contraseñas no coinciden.';
+        exit;
+    }
 
-  // Verificar si el email ya está registrado
-  $emailExistsQuery = "SELECT * FROM twn_users WHERE email = '$email'";
-  $emailExistsResult = mysqli_query($conn, $emailExistsQuery);
+    // Verificar si el email ya está registrado
+    $emailExistsQuery = "SELECT * FROM twn_users WHERE email = '$email'";
+    $emailExistsResult = mysqli_query($conn, $emailExistsQuery);
 
-  if (mysqli_num_rows($emailExistsResult) > 0) {
-    // El email ya ha sido registrado
-    echo '<script>
+    if (mysqli_num_rows($emailExistsResult) > 0) {
+        // El email ya ha sido registrado
+        echo '<script>
             document.addEventListener("DOMContentLoaded", function() {
               var errorBox = document.createElement("div");
               errorBox.classList.add("error-box");
@@ -62,15 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               });
             });
           </script>';
-  } else {
-    // Crear la consulta INSERT + pw hasheada
-  $pw = md5($pw);
-  $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
+    } else {
+        // Crear la consulta INSERT + pw hasheada
+        $pw = md5($pw);
+        $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
 
-  // Ejecutar la consulta
-  if (mysqli_query($conn, $query)) {
-    // Registro exitoso
-    echo '<script>
+        // Ejecutar la consulta
+        if (mysqli_query($conn, $query)) {
+            // Registro exitoso
+            echo '<script>
             document.addEventListener("DOMContentLoaded", function() {
               var successBox = document.createElement("div");
               successBox.classList.add("success-box");
@@ -93,18 +93,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
           </script>';
 
-    // Restablecer los valores de los campos del formulario
-    $nombre = '';
-    $email = '';
-    $pw = '';
-    $pwConfirm = '';
-  } else {
-    // Error al ejecutar la consulta
-    echo 'Error al registrar el usuario: ' . mysqli_error($conn);
-  }
-}
+            // Restablecer los valores de los campos del formulario
+            $nombre = '';
+            $email = '';
+            $pw = '';
+            $pwConfirm = '';
+        } else {
+            // Error al ejecutar la consulta
+            echo 'Error al registrar el usuario: ' . mysqli_error($conn);
+        }
+    }
 
-mysqli_close($conn);
+    mysqli_close($conn);
 }
 ?>
 
@@ -282,19 +282,16 @@ mysqli_close($conn);
             <form name="registroForm" id="registroForm" action="registro.php" method="post">
                 <div class="form-group">
                     <label for="name">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre"
-                        placeholder="Será como te conozcan los demás en Twine" required>
+                    <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Será como te conozcan los demás en Twine" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Correo electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email"
-                        placeholder="Enviaremos un código de confirmación a tu correo" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enviaremos un código de confirmación a tu correo" required>
                     <div id="emailHelp" class="form-text">No compartiremos tu correo electrónico con nadie más.</div>
                 </div>
                 <div class="form-group">
                     <label for="password">Contraseña</label>
-                    <input type="password" class="form-control" id="pw" name="pw"
-                        placeholder="Elige una contraseña segura" required>
+                    <input type="password" class="form-control" id="pw" name="pw" placeholder="Elige una contraseña segura" required>
                     <div id="pwHelp" class="form-text">Tu contraseña debe ser de al menos 8 caracteres, alfanumérica,
                         con
                         mayúsculas y minúsculas</div>
@@ -302,8 +299,7 @@ mysqli_close($conn);
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">Confirmar contraseña</label>
-                    <input type="password" class="form-control" id="pwConfirm" name="pwConfirm"
-                        placeholder="¡Esta es fácil!" required>
+                    <input type="password" class="form-control" id="pwConfirm" name="pwConfirm" placeholder="¡Esta es fácil!" required>
                     <div id="pwConfirmHelp" class="form-text">Tu contraseña y este campo deben coincidir</div>
                     <span id="pwConfirmError" class="error"></span>
                 </div>
@@ -317,7 +313,7 @@ mysqli_close($conn);
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Referenciar los elementos del formulario
             var form = document.getElementById('registroForm');
             var pwInput = document.getElementById('pw');
@@ -326,7 +322,7 @@ mysqli_close($conn);
             var pwConfirmError = document.getElementById('pwConfirmError');
 
             // Agregar un evento al envío del formulario para realizar la validación en el lado del cliente
-            form.addEventListener('submit', function (event) {
+            form.addEventListener('submit', function(event) {
                 pwError.textContent = ''; // Limpiar mensaje de error anterior
                 pwConfirmError.textContent = ''; // Limpiar mensaje de error anterior
 

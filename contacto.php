@@ -2,6 +2,7 @@
 session_start();
 
 require 'vendor/autoload.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -14,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
   $comentario = $_REQUEST["comentario"];
   $comentario = htmlspecialchars($comentario, ENT_QUOTES, 'UTF-8');
-  
+
   // Conexión a Mailtrap con PHPMailer
   $mail = new PHPMailer();
   $mail->isSMTP();
@@ -31,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail->addAddress('contacto@twine.com', 'Twine');
     $mail->CharSet = 'UTF-8';
     $mail->Subject = "Comentario de $nombre";
-    $mail->Body = 'Nombre: '.$nombre."\n".'Email: '.$email."\n".'Comentario: '.$comentario;
+    $mail->Body = 'Nombre: ' . $nombre . "\n" . 'Email: ' . $email . "\n" . 'Comentario: ' . $comentario;
     $mail->send();
 
     $message = '¡Tu comentario ha sido recibido!';
@@ -161,18 +162,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="col-md-12">
         <span><img src="icons/send-fill.svg"></span>
         <label for="comentario" class="form-lab">¿Cómo podemos ayudarte?</label>
-        <textarea class="form-control" id="comentario" rows="3" name= "comentario" required></textarea>
+        <textarea class="form-control" id="comentario" rows="3" name="comentario" required></textarea>
       </div>
       <div class="col-md-12">
         <button type="submit" name="submit" class="btn btn-primary">Enviar</button>
       </div>
     </form>
   </div>
-<?php if (!empty($message)): ?>
-  <div class="message <?php echo $messageClass; ?>">
-    <?php echo $message; ?>
-  </div>
-<?php endif; ?>
+  <?php if (!empty($message)) : ?>
+    <div class="message <?php echo $messageClass; ?>">
+      <?php echo $message; ?>
+    </div>
+  <?php endif; ?>
   <!-- /FORMULARIO -->
   <!-- FOOTER -->
   <footer class="bg-light">

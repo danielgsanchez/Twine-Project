@@ -182,7 +182,7 @@ if (empty($_SESSION["email"])) {
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectarse</span>
+                    <span class="text">Desconectar</span>
                 </a>
             </li>
         </ul>

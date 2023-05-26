@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!empty($_SESSION["email"])){
+if (!empty($_SESSION["email"])) {
   header("Location: home.php");
   exit;
 }
@@ -199,14 +199,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-group">
           <label for="password">Contraseña</label>
-          <input type="password" id="password" name="password" class="form-control" placeholder="Tu contraseña"
-            required>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Tu contraseña" required>
         </div>
-        <?php if (isset($error)): ?>
-            <p class="error"><?php echo $error; ?></p>
+        <?php if (isset($error)) : ?>
+          <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
         <a href="newpwd.php">¿Has olvidado tu contraseña?</a>
-        <br/><br/>
+        <br /><br />
         <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
       </form>
     </div>

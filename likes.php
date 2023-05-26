@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (empty($_SESSION["email"])) {
+    header("Location: index.php");
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -132,7 +137,7 @@ session_start();
 </head>
 
 <body>
-<div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg" style="width: 50px;">
@@ -188,16 +193,16 @@ session_start();
     </div>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             var $sidebar = $('#sidebar');
             var $content = $('.content');
 
-            $sidebar.mouseenter(function () {
+            $sidebar.mouseenter(function() {
                 $sidebar.addClass('sidebar-expanded');
                 $content.css('margin-left', '200px');
             });
 
-            $sidebar.mouseleave(function () {
+            $sidebar.mouseleave(function() {
                 $sidebar.removeClass('sidebar-expanded');
                 $content.css('margin-left', '80px');
             });
