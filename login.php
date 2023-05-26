@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar si se encontraron coincidencias
     if ($result->num_rows == 1) {
       // Credenciales correctas, redirigir al usuario a home.php
+      $_SESSION["email"] = $email;
       header('Location: home.php');
       exit();
     } else {
