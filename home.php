@@ -42,7 +42,6 @@ if ($result->num_rows > 0) {
             margin: 0;
             padding: 0;
             background-color: #fcdfe2;
-            /* Cambiar el color de fondo a un rosa muy ligero */
         }
 
         .sidebar {
@@ -52,7 +51,6 @@ if ($result->num_rows > 0) {
             height: 100vh;
             width: 80px;
             background-color: #f8f9fa;
-            /* Cambiar el color de fondo a light */
             transition: width 0.3s ease-in-out;
         }
 
@@ -64,7 +62,6 @@ if ($result->num_rows > 0) {
             text-align: center;
             padding: 20px;
             color: #000;
-            /* Cambiar el color del logo a dark */
             font-size: 24px;
         }
 
@@ -82,7 +79,6 @@ if ($result->num_rows > 0) {
 
         .sidebar-icons a {
             color: #000;
-            /* Cambiar el color de los iconos a dark */
             font-size: 20px;
             display: inline-block;
             vertical-align: middle;
@@ -95,12 +91,10 @@ if ($result->num_rows > 0) {
 
         .sidebar-icons a:hover {
             background-color: #e9ecef;
-            /* Cambiar el color de fondo en hover a un tono más claro */
         }
 
         .sidebar-icons a:active {
             background-color: #c6d2d9;
-            /* Cambiar el color de fondo en active a un tono más oscuro */
         }
 
         .sidebar-expanded .sidebar-icons a .icon {
@@ -110,17 +104,14 @@ if ($result->num_rows > 0) {
         .sidebar-expanded .sidebar-icons a .text {
             display: inline-block;
             margin-left: 5px;
-            /* Espacio adicional entre el icono y el texto */
         }
 
         .sidebar .text {
             display: none;
-            /* Ocultar el texto por defecto */
         }
 
         .sidebar-expanded .text {
             display: inline-block;
-            /* Mostrar el texto solo cuando la barra lateral está expandida */
         }
 
         .content {
@@ -130,7 +121,6 @@ if ($result->num_rows > 0) {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Ajustar la altura al 100% del viewport */
         }
 
         .home-card {

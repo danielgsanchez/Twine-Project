@@ -36,13 +36,12 @@ if ($result->num_rows > 0) {
   <link rel="stylesheet" type="text/css" href="style.css" />
   <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
   <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
-    <title>Twine - ¡Descubre a tu media naranja!</title>
+    <title>¡Bienvenido a Twine!</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: #fcdfe2;
-            /* Cambiar el color de fondo a un rosa muy ligero */
         }
 
         .sidebar {
@@ -52,7 +51,6 @@ if ($result->num_rows > 0) {
             height: 100vh;
             width: 80px;
             background-color: #f8f9fa;
-            /* Cambiar el color de fondo a light */
             transition: width 0.3s ease-in-out;
         }
 
@@ -64,7 +62,6 @@ if ($result->num_rows > 0) {
             text-align: center;
             padding: 20px;
             color: #000;
-            /* Cambiar el color del logo a dark */
             font-size: 24px;
         }
 
@@ -82,7 +79,6 @@ if ($result->num_rows > 0) {
 
         .sidebar-icons a {
             color: #000;
-            /* Cambiar el color de los iconos a dark */
             font-size: 20px;
             display: inline-block;
             vertical-align: middle;
@@ -95,12 +91,10 @@ if ($result->num_rows > 0) {
 
         .sidebar-icons a:hover {
             background-color: #e9ecef;
-            /* Cambiar el color de fondo en hover a un tono más claro */
         }
 
         .sidebar-icons a:active {
             background-color: #c6d2d9;
-            /* Cambiar el color de fondo en active a un tono más oscuro */
         }
 
         .sidebar-expanded .sidebar-icons a .icon {
@@ -110,17 +104,14 @@ if ($result->num_rows > 0) {
         .sidebar-expanded .sidebar-icons a .text {
             display: inline-block;
             margin-left: 5px;
-            /* Espacio adicional entre el icono y el texto */
         }
 
         .sidebar .text {
             display: none;
-            /* Ocultar el texto por defecto */
         }
 
         .sidebar-expanded .text {
             display: inline-block;
-            /* Mostrar el texto solo cuando la barra lateral está expandida */
         }
 
         .content {
@@ -130,7 +121,6 @@ if ($result->num_rows > 0) {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Ajustar la altura al 100% del viewport */
         }
 
         .home-card {
@@ -158,7 +148,7 @@ if ($result->num_rows > 0) {
 </head>
 
 <body>
-<div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg">
@@ -206,16 +196,25 @@ if ($result->num_rows > 0) {
             </li>
         </ul>
     </div>
-    <div class="content">
-        <div class="home-card">
-            <h2>Hazte Oro</h2>
-            <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
-            <button class="btn btn-primary" type="button">
-                <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
-            </button>
+    <?php
+    if ( (isset($goldSub)) && ($goldSub == 0) ){ ?>
+        <div class="content">
+            <div class="home-card">
+                <h2>Hazte Oro</h2>
+                <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
+                <button class="btn btn-primary" type="button">
+                    <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
+                </button>
+            </div>
         </div>
-    </div>
-
+    <?php } else { ?>
+        <div class="content">
+            <div class="home-card">
+                <h2>Bienvenido a Twine Gold</h2>
+                <p>Tu cuenta tiene una suscripción a Twine Gold. ¡Disfruta de todas las ventajas exclusivas!</p>
+            </div>
+        </div>
+    <?php } ?>
     <script>
         $(document).ready(function() {
             var $sidebar = $('#sidebar');
