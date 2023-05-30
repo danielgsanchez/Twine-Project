@@ -7,44 +7,42 @@ if (!empty($_SESSION["email"])) {
 }
 
 require_once 'models/conn.php';
+require_once 'models/user_model.php';
 
-// Verificar si se ha enviado el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Obtener los valores enviados
-    $nombre = $_REQUEST['nombre'];
-    $email = $_REQUEST['email'];
-    $pw = $_REQUEST['pw'];
-    $pwConfirm = $_REQUEST['pwConfirm'];
+    $signupUser = new UserModel($conn);
+    $msg = $signupUser->userSignup($_REQUEST['nombre'], $_REQUEST['email'], $_REQUEST['pw'], $_REQUEST['pwConfirm']);
+    if ($msg['successful']) {
+        echo '
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          var successBox = document.createElement("div");
+          successBox.classList.add("success-box");
+          successBox.textContent = "' . $msg['msg'] . '";
 
-    // Validar y escapar los valores recibidos
-    $nombre = mysqli_real_escape_string($conn, $nombre);
-    $email = mysqli_real_escape_string($conn, $email);
-    $pw = mysqli_real_escape_string($conn, $pw);
-    $pwConfirm = mysqli_real_escape_string($conn, $pwConfirm);
+          var closeButton = document.createElement("button");
+          closeButton.classList.add("close-button");
+          closeButton.innerHTML = "&#10006;";
 
-    // Validar la longitud y características de la contraseña
-    if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
-        echo 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.';
-        exit;
-    }
+          successBox.appendChild(closeButton);
+          document.body.appendChild(successBox);
 
-    // Verificar que los campos de pw y pwConfirm sean iguales
-    if ($pw !== $pwConfirm) {
-        echo 'Las contraseñas no coinciden.';
-        exit;
-    }
+          setTimeout(function() {
+            successBox.style.display = "none";
+          }, 3000);
 
-    // Verificar si el email ya está registrado
-    $emailExistsQuery = "SELECT * FROM twn_users WHERE email = '$email'";
-    $emailExistsResult = mysqli_query($conn, $emailExistsQuery);
-
-    if (mysqli_num_rows($emailExistsResult) > 0) {
-        // El email ya ha sido registrado
-        echo '<script>
+          closeButton.addEventListener("click", function() {
+            successBox.style.display = "none";
+          });
+        });
+      </script>';
+    } else {
+        echo '
+        <script>
             document.addEventListener("DOMContentLoaded", function() {
               var errorBox = document.createElement("div");
               errorBox.classList.add("error-box");
-              errorBox.textContent = "¡Ese email ya ha sido registrado!";
+              errorBox.textContent = "' . $msg['msg'] . '";
 
               var closeButton = document.createElement("button");
               closeButton.classList.add("close-button");
@@ -61,50 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 errorBox.style.display = "none";
               });
             });
-          </script>';
-    } else {
-        // Crear la consulta INSERT + pw hasheada
-        $pw = md5($pw);
-        $query = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES ('$nombre', '$nombre', '$email', '$pw')";
-
-        // Ejecutar la consulta
-        if (mysqli_query($conn, $query)) {
-            // Registro exitoso
-            echo '<script>
-            document.addEventListener("DOMContentLoaded", function() {
-              var successBox = document.createElement("div");
-              successBox.classList.add("success-box");
-              successBox.textContent = "Registro exitoso";
-
-              var closeButton = document.createElement("button");
-              closeButton.classList.add("close-button");
-              closeButton.innerHTML = "&#10006;";
-
-              successBox.appendChild(closeButton);
-              document.body.appendChild(successBox);
-
-              setTimeout(function() {
-                successBox.style.display = "none";
-              }, 3000);
-
-              closeButton.addEventListener("click", function() {
-                successBox.style.display = "none";
-              });
-            });
-          </script>';
-
-            // Restablecer los valores de los campos del formulario
-            $nombre = '';
-            $email = '';
-            $pw = '';
-            $pwConfirm = '';
-        } else {
-            // Error al ejecutar la consulta
-            echo 'Error al registrar el usuario: ' . mysqli_error($conn);
-        }
+        </script>';
     }
-
-    mysqli_close($conn);
 }
 ?>
 
@@ -256,22 +212,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a class="nav-link" href="download.php">Descarga la app</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a href="registro.php" class="text-decoration-none text-white">
-                            <button class="btn btn-primary me-2" type="button">
-                                Regístrate
-                            </button>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="login.php" class="text-decoration-none text-white">
-                            <button class="btn btn-primary" type="button">
-                                Conéctate
-                            </button>
-                        </a>
-                    </li>
-                </ul>
+                <?php
+                if (empty($_SESSION["email"])) { ?>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a href="registro.php" class="text-decoration-none text-white">
+                                <button class="btn btn-primary me-2" type="button">
+                                    Regístrate
+                                </button>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="login.php" class="text-decoration-none text-white">
+                                <button class="btn btn-primary" type="button">
+                                    Conéctate
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                <?php } else { ?>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item p-2">
+                            <a href="home.php" class="text-decoration-none" style="color: black;">
+                                <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+                            </a>
+                        </li>
+                        <li class="nav-item p-2">
+                            <a href="logout.php" class="text-decoration-none" style="color:black;">
+                                <span class=icon"><i class="fas fa-2x fa-power-off"></i></span>
+                            </a>
+                        </li>
+                    </ul>
+                <?php }
+                ?>
             </div>
         </div>
     </nav>
@@ -355,3 +328,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+<?php $signupUser->closeConnection(); ?>

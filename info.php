@@ -7,7 +7,7 @@ session_start();
 <html>
 
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="icons/favicon.png">
@@ -62,9 +62,14 @@ session_start();
           </ul>
         <?php } else { ?>
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
+            <li class="nav-item p-2">
               <a href="home.php" class="text-decoration-none" style="color: black;">
                 <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+              </a>
+            </li>
+            <li class="nav-item p-2">
+              <a href="logout.php" class="text-decoration-none" style="color:black;">
+                <span class=icon"><i class="fas fa-2x fa-power-off"></i></span>
               </a>
             </li>
           </ul>
@@ -86,10 +91,11 @@ session_start();
         para ti. ¿A qué estás esperando? Descarga Twine hoy y comienza a conocer a personas increíbles que comparten tus
         intereses y valores.</p>
       <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">
-          <a href="registro.php" class="text-decoration-none" style="color:white;">¡Únete!
-          </a>
-        </button>
+        <a href="registro.php" class="text-decoration-none" style="color:white;">
+          <button type="button" class="btn btn-primary btn-lg px-4 gap-3">
+            ¡Únete!
+          </button>
+        </a>
       </div>
     </div>
   </div>

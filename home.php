@@ -7,35 +7,25 @@ if (empty($_SESSION["email"])) {
 }
 
 require_once "models/conn.php";
+require_once "models/user_model.php";
 
-// Consulta para comprobar si es usuario de Twine Gold
-$email = $_SESSION["email"];
-$sql = "SELECT gold_sub FROM twn_users WHERE email = '$email'";
-
-// Ejecutar la consulta
-$result = $conn->query($sql);
-
-// Verificar si se encontró el usuario
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $goldSub = $row['gold_sub'];
-}
-
+$userModel = new UserModel($conn);
+$goldSub = $userModel->getGold($_SESSION["email"]);
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="icons/favicon.png">
-  <link rel="stylesheet" type="text/css" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
-  <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="icons/favicon.png">
+    <link rel="stylesheet" type="text/css" href="helpers/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
+    <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
     <title>¡Bienvenido a Twine!</title>
     <style>
         body {
@@ -197,7 +187,7 @@ if ($result->num_rows > 0) {
         </ul>
     </div>
     <?php
-    if ( (isset($goldSub)) && ($goldSub == 0) ){ ?>
+    if ((isset($goldSub)) && ($goldSub == 0)) { ?>
         <div class="content">
             <div class="home-card">
                 <h2>Hazte Oro</h2>
@@ -234,3 +224,4 @@ if ($result->num_rows > 0) {
 </body>
 
 </html>
+<?php $userModel->closeConnection(); ?>

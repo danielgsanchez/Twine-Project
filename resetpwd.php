@@ -113,9 +113,14 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
             </ul>
           <?php } else { ?>
             <ul class="navbar-nav ms-auto">
-              <li class="nav-item">
+              <li class="nav-item p-2">
                 <a href="home.php" class="text-decoration-none" style="color: black;">
                   <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+                </a>
+              </li>
+              <li class="nav-item p-2">
+                <a href="logout.php" class="text-decoration-none" style="color:black;">
+                  <span class=icon"><i class="fas fa-2x fa-power-off"></i></span>
                 </a>
               </li>
             </ul>
@@ -196,22 +201,39 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
               <a class="nav-link" href="download.php">Descarga la app</a>
             </li>
           </ul>
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a href="registro.php" class="text-decoration-none text-white">
-                <button class="btn btn-primary me-2" type="button">
-                  Regístrate
-                </button>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="login.php" class="text-decoration-none text-white">
-                <button class="btn btn-primary" type="button">
-                  Conéctate
-                </button>
-              </a>
-            </li>
-          </ul>
+          <?php
+          if (empty($_SESSION["email"])) { ?>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a href="registro.php" class="text-decoration-none text-white">
+                  <button class="btn btn-primary me-2" type="button">
+                    Regístrate
+                  </button>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="login.php" class="text-decoration-none text-white">
+                  <button class="btn btn-primary" type="button">
+                    Conéctate
+                  </button>
+                </a>
+              </li>
+            </ul>
+          <?php } else { ?>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item p-2">
+                <a href="home.php" class="text-decoration-none" style="color: black;">
+                  <span class="icon"><i class="fas fa-2x fa-home"></i></span>
+                </a>
+              </li>
+              <li class="nav-item p-2">
+                <a href="logout.php" class="text-decoration-none" style="color:black;">
+                  <span class=icon"><i class="fas fa-2x fa-power-off"></i></span>
+                </a>
+              </li>
+            </ul>
+          <?php }
+          ?>
         </div>
       </div>
     </nav>

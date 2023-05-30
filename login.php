@@ -7,56 +7,20 @@ if (!empty($_SESSION["email"])) {
 }
 
 require_once 'models/conn.php';
+require_once 'models/user_model.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Obtener los valores ingresados en el formulario
-  $email = $_REQUEST['email'];
-  $password = $_REQUEST['password'];
-
-  // Preparar la consulta utilizando sentencias preparadas
-  $password = md5($password);
-  $query = "SELECT * FROM twn_users WHERE email = ? AND password = ?";
-  $statement = $conn->prepare($query);
-
-  // Verificar si la preparación de la consulta fue exitosa
-  if ($statement) {
-    // Sanitizar los valores ingresados
-    $statement->bind_param('ss', $email, $password);
-
-    // Ejecutar la consulta
-    $statement->execute();
-
-    // Obtener el resultado de la consulta
-    $result = $statement->get_result();
-
-    // Verificar si se encontraron coincidencias
-    if ($result->num_rows == 1) {
-      // Credenciales correctas, redirigir al usuario a home.php
-      $_SESSION["email"] = $email;
-      header('Location: home.php');
-      exit();
-    } else {
-      // Credenciales incorrectas, mostrar mensaje de error
-      $error = "Credenciales incorrectas";
-    }
-
-    // Cerrar el statement
-    $statement->close();
-  } else {
-    // Error en la preparación de la consulta
-    die('Error en la consulta: ' . $conn->error);
-  }
-
-  // Cerrar la conexión a la base de datos
-  mysqli_close($conn);
+  $mLogin = new UserModel($conn);
+  $error = $mLogin->userLogin($_REQUEST["email"], $_REQUEST["password"]);
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/x-icon" href="icons/favicon.png">
@@ -202,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label for="password">Contraseña</label>
           <input type="password" id="password" name="password" class="form-control" placeholder="Tu contraseña" required>
         </div>
-        <?php if (isset($error)) : ?>
+        <?php if (!empty($error)) : ?>
           <p class="error"><?php echo $error; ?></p>
         <?php endif; ?>
         <a href="newpwd.php">¿Has olvidado tu contraseña?</a>
@@ -219,3 +183,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
+<?php $userModel->closeConnection(); ?>

@@ -6,6 +6,12 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
+require_once "models/conn.php";
+require_once "models/user_model.php";
+
+$userModel = new UserModel($conn);
+$goldSub = $userModel->getGold($_SESSION["email"]);
+
 ?>
 
 <!DOCTYPE html>
@@ -138,7 +144,7 @@ if (empty($_SESSION["email"])) {
 </head>
 
 <body>
-<div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg">
@@ -188,11 +194,7 @@ if (empty($_SESSION["email"])) {
     </div>
     <div class="content">
         <div class="home-card">
-            <h2>Hazte Oro</h2>
-            <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
-            <button class="btn btn-primary" type="button">
-                <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
-            </button>
+
         </div>
     </div>
 
