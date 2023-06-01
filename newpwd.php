@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $query = "UPDATE twn_users SET confirmation_code = '$tkn' WHERE email = '$email'";
     $result = $conn->query($query);
     if ($result == true) {
+      $error = "Revisa tu correo electrónico.";
       // Actualización exitosa
       //¡¡¡¡OJO A LA RUTA!!!
       $link = "<a href='localhost/pfinal/resetpwd.php?key=" . $email . "&tkn=" . $tkn . "'>haz click aquí</a>";
@@ -57,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     } else {
       // Error en la actualización
-      die();
+      $error = "El correo electrónico no existe en la base de datos.";
     }
   } else {
     // El correo electrónico no existe en la base de datos
@@ -70,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
   <meta charset="UTF-8">

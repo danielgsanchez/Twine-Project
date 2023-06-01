@@ -11,6 +11,7 @@ require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
 $goldSub = $userModel->getGold($_SESSION["email"]);
+$_SESSION["user_id"] = $userModel->getId($_SESSION["email"]);
 ?>
 
 <!DOCTYPE html>

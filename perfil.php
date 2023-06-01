@@ -11,6 +11,7 @@ require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
 $goldSub = $userModel->getGold($_SESSION["email"]);
+$profileData = $userModel->getFullProfile($_SESSION["user_id"]);
 
 ?>
 

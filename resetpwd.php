@@ -4,8 +4,8 @@ session_start();
 require_once "models/conn.php";
 
 if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
-  $newPwd = $_POST['newPwd'];
-  $confNewPwd = $_POST['confNewPwd'];
+  $newPwd = $_REQUEST['newPwd'];
+  $confNewPwd = $_REQUEST['confNewPwd'];
   $msg = "";
 
   // Realizar la validación de la contraseña
@@ -19,7 +19,7 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
     $hashedPwd = md5($newPwd);
 
     // Realizar la actualización en la base de datos
-    $email = $_POST["email"];
+    $email = $_REQUEST["email"];
 
     // Construir la consulta de actualización
     $sql = "UPDATE twn_users SET password='$hashedPwd' WHERE email='$email'";
@@ -27,14 +27,17 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
     // Ejecutar la consulta
     if ($conn->query($sql) === TRUE) {
       $msg = "Contraseña actualizada con éxito.";
+      $sql = "UPDATE twn_users SET confirmation_code = NULL WHERE email = '$email'";
+      $result = $conn->query($sql);
     } else {
       $msg = "Error al actualizar la contraseña.";
     }
 
     $conn->close();
-  } ?>
+  }
+  ?>
   <!DOCTYPE html>
-  <html>
+  <html lang="es">
 
   <head>
     <meta charset="UTF-8">
