@@ -47,6 +47,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             width: 80px;
             background-color: #f8f9fa;
             transition: width 0.3s ease-in-out;
+            z-index: 999;
         }
 
         .sidebar-expanded {
@@ -128,6 +129,23 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
         .card {
             margin-bottom: 20px;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .card-text {
+            margin-bottom: 15px;
         }
 
         @media (max-width: 768px) {
@@ -142,6 +160,17 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             .content {
                 margin-left: 60px;
             }
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .d-flex.justify-content-between {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -195,20 +224,28 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             </li>
         </ul>
     </div>
-    <h1>Explorar perfiles</h1>
 
-    <div class="container">
+    <div class="content">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-6 card-container">
                 <?php if ($randomProfile) : ?>
                     <div class="card">
                         <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
                         <div class="card-body">
-                            <h5 class="card-title"><?php echo $randomProfile['first_name']; ?></h5>
-                            <p class="card-text"><?php echo $randomProfile['gender_id']; ?></p>
+                            <h5 class="card-title"><strong>Nombre: </strong><?php echo $randomProfile['first_name']; ?></h5>
+                            <p class="card-text"><strong>Género: </strong> <?php echo $randomProfile['gender_id']; ?></p>
+                            <div class="form-group">
+                            <label for="description"><strong>Descripción:</strong></label><br/>
                             <p class="card-text"><?php echo $randomProfile['description']; ?></p>
-                            <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">¡Coincidir!</button>
-                            <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">Rechazar</button>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">
+                                    <i class="fas fa-heart"></i> ¡Enlázate!
+                                </button>
+                                <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">
+                                    <i class="fas fa-ban"></i> Pasar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 <?php else : ?>
