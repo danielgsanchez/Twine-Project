@@ -303,46 +303,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </label>
                                         </div>
                                         <div id="paypalFields">
-                                            <label for="paypalEmail">PayPal Email</label>
-                                            <input type="email" class="form-control" id="paypalEmail" name="paypalEmail" placeholder="Enter PayPal Email">
+                                            <label for="paypalEmail">Email de PayPal</label>
+                                            <input type="email" class="form-control" id="paypalEmail" name="paypalEmail" placeholder="Introduce tu email de PayPal">
                                             <small class="form-text text-danger"></small>
-                                        </div>
+                                        </div><br/>
                                     </div>
                                     <div class="form-group">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="paymentMethod" id="cardRadio" value="card">
                                             <label class="form-check-label" for="cardRadio">
-                                                <i class="far fa-credit-card"></i> Card
+                                                <i class="far fa-credit-card"></i> Tarjeta
                                             </label>
                                         </div>
                                         <div id="cardFields" style="display: none;">
                                             <div class="form-group">
                                                 <label for="cardNumber">
-                                                    <i class="far fa-credit-card"></i> Card Number
+                                                    <i class="far fa-credit-card"></i> Número de tarjeta
                                                 </label>
-                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Enter Card Number">
+                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Introduce el número de tarjeta">
                                                 <small class="form-text text-danger"></small>
-                                            </div>
+                                            </div><br/>
                                             <div class="form-group">
                                                 <label for="cardName">
-                                                    <i class="far fa-user"></i> Cardholder Name
+                                                    <i class="far fa-user"></i> Propietario de la tarjeta
                                                 </label>
-                                                <input type="text" class="form-control" id="cardName" name="cardName" placeholder="Enter Cardholder Name">
+                                                <input type="text" class="form-control" id="cardName" name="cardName" placeholder="Introduce el nombre del titular de la tarjeta">
                                                 <small class="form-text text-danger"></small>
-                                            </div>
+                                            </div><br/>
                                             <div class="form-row">
                                                 <div class="col">
                                                     <label for="cardExpiry">
-                                                        <i class="far fa-calendar-alt"></i> Expiry Date
+                                                        <i class="far fa-calendar-alt"></i> Fecha de vencimiento
                                                     </label>
                                                     <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" placeholder="MM/YY">
                                                     <small class="form-text text-danger"></small>
-                                                </div>
+                                                </div><br/>
                                                 <div class="col">
                                                     <label for="cardCVC">
-                                                        <i class="fas fa-lock"></i> CVC
+                                                        <i class="fas fa-lock"></i> CVC/CVV
                                                     </label>
-                                                    <input type="password" class="form-control" id="cardCVC" name="cardCVC" placeholder="Enter CVC">
+                                                    <input type="password" class="form-control" id="cardCVC" name="cardCVC" placeholder="Introduce el CVC/CVV">
                                                     <small class="form-text text-danger"></small>
                                                 </div>
                                             </div>
@@ -350,11 +350,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6>Payment Plan</h6>
+                                    <h6>Plan de pago</h6>
                                     <div class="form-group">
                                         <select class="form-control" id="paymentPlan" name="paymentPlan">
-                                            <option value="monthly">Monthly</option>
-                                            <option value="yearly">Yearly</option>
+                                            <option value="monthly">Mensual</option>
+                                            <option value="yearly">Anual</option>
                                         </select>
                                     </div>
                                     <div class="payment-plan">
@@ -363,7 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <p>Precio final: 18.75 €</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div><br/>
                             <button type="submit" id="payButton" name="payButton" class="btn btn-primary">Realizar pago</button>
                         </form>
                     </div>
@@ -491,28 +491,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Función de validación de email
                 function isValidEmail(email) {
-                    // email validation
+                    // validación de email
                     var emailRegex = /^\S+@\S+\.\S+$/;
                     return emailRegex.test(email);
                 }
 
                 // Función de validación de número de tarjeta
                 function isValidCardNumber(cardNumber) {
-                    // (16 digits)
+                    // (16 dígitos)
                     var cardNumberRegex = /^\d{16}$/;
                     return cardNumberRegex.test(cardNumber);
                 }
 
                 // Función de validación de fecha de vencimiento
                 function isValidExpiryDate(expiryDate) {
-                    // (MM/YY format)
+                    // (formato MM/YY)
                     var expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
                     return expiryDateRegex.test(expiryDate);
                 }
 
                 // Función de validación de CVC
                 function isValidCVC(cvc) {
-                    // (3 digits)
+                    // (3 dígitos)
                     var cvcRegex = /^\d{3}$/;
                     return cvcRegex.test(cvc);
                 }
@@ -674,7 +674,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </body>
 
     </html>
-<?php }
-$userModel->closeConnection();
-$paymentModel->closeConnection();
-?>
+<?php } ?>

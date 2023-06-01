@@ -225,4 +225,3 @@ $_SESSION["user_id"] = $userModel->getId($_SESSION["email"]);
 </body>
 
 </html>
-<?php $userModel->closeConnection(); ?>

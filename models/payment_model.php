@@ -1,5 +1,6 @@
 <?php
-require_once "models/conn.php";
+
+require_once __DIR__ . "/../models/conn.php";
 
 class PaymentClass
 {

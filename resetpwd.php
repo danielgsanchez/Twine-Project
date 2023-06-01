@@ -310,7 +310,7 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
     </html>
 <?php
   } else {
-    echo "Se ha producido un error.";
+    header("Location: error.php");
   }
 } else {
   header("Location: error.php");

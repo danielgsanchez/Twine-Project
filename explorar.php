@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (empty($_SESSION["email"])) {
@@ -11,6 +12,8 @@ require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
 $goldSub = $userModel->getGold($_SESSION["email"]);
+
+$randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
 ?>
 
@@ -27,6 +30,7 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
     <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="explorar.js"></script>
     <title>¡Bienvenido a Twine!</title>
     <style>
         body {
@@ -122,6 +126,10 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
             max-width: 400px;
         }
 
+        .card {
+            margin-bottom: 20px;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -187,25 +195,29 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
             </li>
         </ul>
     </div>
-    <?php
-    if ((isset($goldSub)) && ($goldSub == 0)) { ?>
-        <div class="content">
-            <div class="home-card">
-                <h2>Hazte Oro</h2>
-                <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
-                <button class="btn btn-primary" type="button">
-                    <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
-                </button>
+    <h1>Explorar perfiles</h1>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <?php if ($randomProfile) : ?>
+                    <div class="card">
+                        <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $randomProfile['first_name']; ?></h5>
+                            <p class="card-text"><?php echo $randomProfile['gender_id']; ?></p>
+                            <p class="card-text"><?php echo $randomProfile['description']; ?></p>
+                            <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">¡Coincidir!</button>
+                            <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">Rechazar</button>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <p>No se encontraron perfiles disponibles.</p>
+                <?php endif; ?>
             </div>
         </div>
-    <?php } else { ?>
-        <div class="content">
-            <div class="home-card">
-                <h2>Bienvenido a Twine Gold</h2>
-                <p>Tu cuenta tiene una suscripción a Twine Gold. ¡Disfruta de todas las ventajas exclusivas!</p>
-            </div>
-        </div>
-    <?php } ?>
+    </div>
+
     <script>
         $(document).ready(function() {
             var $sidebar = $('#sidebar');

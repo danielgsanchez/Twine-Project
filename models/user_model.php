@@ -1,5 +1,6 @@
 <?php
-require_once "models/conn.php";
+
+require_once __DIR__ . "/../models/conn.php";
 
 class UserModel
 {
@@ -143,7 +144,7 @@ class UserModel
             return $msg;
         } else {
             $hashedPw = md5($pw);
-            $insertQuery = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES (?, ?, ?, ?)";
+            $insertQuery = "INSERT INTO twn_users (first_name, first_name, email, password) VALUES (?, ?, ?, ?)";
             $stmt = $this->conn->prepare($insertQuery);
             $stmt->bind_param('ssss', $nombre, $nombre, $email, $hashedPw);
             // Ejecutar la consulta
@@ -158,11 +159,118 @@ class UserModel
         }
     }
 
-    function updatePassword(){
-        //
+    public function getRejectedProfiles($userId)
+    {
+        // Consulta SQL para obtener la lista de IDs de perfiles rechazados o bloqueados por el usuario
+        $query = "SELECT user2_id FROM twn_rejects WHERE user1_id = $userId 
+                  UNION
+                  SELECT user1_id FROM twn_rejects WHERE user2_id = $userId";
+
+        // Ejecutar la consulta SQL y obtener el resultado
+        $result = mysqli_query($this->conn, $query);
+
+        // Verificar si se obtuvo un resultado
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Almacenar los IDs de los perfiles rechazados o bloqueados en un array
+            $rejectedProfiles = [];
+
+            // Iterar sobre los resultados y añadir los IDs a la lista
+            while ($row = mysqli_fetch_assoc($result)) {
+                $rejectedProfiles[] = $row['user2_id'];
+            }
+
+            return $rejectedProfiles;
+        } else {
+            return [];
+        }
     }
 
-    function updateProfile(){
+    public function getRandomProfile($userId)
+    {
+        // Obtener los perfiles rechazados o bloqueados por el usuario
+        $rejectedProfiles = $this->getRejectedProfiles($userId);
+
+        // Consulta SQL para seleccionar un perfil aleatorio que no haya sido rechazado o bloqueado
+        $query = "SELECT u.id, u.first_name, u.gender_id, u.description, p.link
+        FROM twn_users u
+        INNER JOIN twn_user_photo p ON u.id = p.user_id
+        WHERE u.id NOT IN (SELECT user2_id FROM twn_rejects WHERE user1_id = $userId) AND u.id != $userId
+        ORDER BY RAND()
+        LIMIT 1";
+
+        // Ejecutar la consulta SQL y obtener el resultado
+        $result = mysqli_query($this->conn, $query);
+
+        // Verificar si se obtuvo un resultado
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Obtener el perfil aleatorio
+            $row = mysqli_fetch_assoc($result);
+
+            // Verificar si el perfil está en la lista de perfiles rechazados o bloqueados
+            $profileId = $row['id'];
+            if (in_array($profileId, $rejectedProfiles)) {
+                // Si el perfil está rechazado o bloqueado, llamar recursivamente a la función para obtener otro perfil aleatorio
+                return $this->getRandomProfile($userId);
+            } else {
+                // Devolver el perfil aleatorio
+                return [
+                    'id' => $row['id'],
+                    'first_name' => $row['first_name'],
+                    'gender_id' => $row['gender_id'],
+                    'description' => $row['description'],
+                    'link' => $row['link']
+                ];
+            }
+        } else {
+            return null;
+        }
+    }
+
+    // Función para agregar o actualizar un registro de coincidencia en la base de datos
+    function addMatch($userId, $profileId)
+    {
+        // Verificar si ya existe un registro de coincidencia entre los usuarios
+        $query = "SELECT id FROM twn_matches WHERE (user1_id = $userId AND user2_id = $profileId) OR (user1_id = $profileId AND user2_id = $userId)";
+        $result = mysqli_query($this->conn, $query);
+
+        // Si el resultado contiene filas, significa que ya existe un registro de coincidencia
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Actualizar el registro existente en la base de datos
+            $updateQuery = "UPDATE twn_matches SET timestamp = CURRENT_TIMESTAMP WHERE (user1_id = $userId AND user2_id = $profileId) OR (user1_id = $profileId AND user2_id = $userId)";
+            mysqli_query($this->conn, $updateQuery);
+
+            return;
+        }
+
+        // Si no existe un registro de coincidencia, realizar la inserción en la base de datos
+        $insertQuery = "INSERT INTO twn_matches (user1_id, user2_id, timestamp) VALUES ($userId, $profileId, CURRENT_TIMESTAMP)";
+        mysqli_query($this->conn, $insertQuery);
+    }
+
+
+    // Función para agregar o actualizar un registro de rechazo en la base de datos
+    function addReject($userId, $profileId)
+    {
+        // Verificar si ya existe un registro de rechazo entre los usuarios
+        $query = "SELECT id FROM twn_rejects WHERE (user1_id = $userId AND user2_id = $profileId) OR (user1_id = $profileId AND user2_id = $userId)";
+        $result = mysqli_query($this->conn, $query);
+
+        // Si el resultado contiene filas, significa que ya existe un registro de rechazo
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Actualizar el registro existente en la base de datos
+            $updateQuery = "UPDATE twn_rejects SET timestamp = CURRENT_TIMESTAMP WHERE (user1_id = $userId AND user2_id = $profileId) OR (user1_id = $profileId AND user2_id = $userId)";
+            mysqli_query($this->conn, $updateQuery);
+
+            return;
+        }
+
+        // Si no existe un registro de rechazo, realizar la inserción en la base de datos
+        $insertQuery = "INSERT INTO twn_rejects (user1_id, user2_id, timestamp) VALUES ($userId, $profileId, CURRENT_TIMESTAMP)";
+        mysqli_query($this->conn, $insertQuery);
+    }
+
+    function updateProfile()
+    {
         //
     }
 
