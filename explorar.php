@@ -133,10 +133,17 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            min-width: 600px;
+            min-height: 100vh;
+            max-height: 100vh;
+            max-width: 600px;
         }
 
         .card-body {
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
         }
 
         .card-title {
@@ -146,6 +153,23 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
         .card-text {
             margin-bottom: 15px;
+        }
+
+        .card-description {
+            flex-grow: 1;
+        }
+        
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
 
         @media (max-width: 768px) {
@@ -160,17 +184,6 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             .content {
                 margin-left: 60px;
             }
-        }
-
-        .card-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .d-flex.justify-content-between {
-            margin-top: 20px;
         }
     </style>
 </head>
@@ -225,7 +238,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
         </ul>
     </div>
 
-    <div class="content">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 card-container">
                 <?php if ($randomProfile) : ?>
@@ -234,11 +247,11 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
                         <div class="card-body">
                             <h5 class="card-title"><strong>Nombre: </strong><?php echo $randomProfile['first_name']; ?></h5>
                             <p class="card-text"><strong>Género: </strong> <?php echo $randomProfile['gender_id']; ?></p>
-                            <div class="form-group">
-                            <label for="description"><strong>Descripción:</strong></label><br/>
-                            <p class="card-text"><?php echo $randomProfile['description']; ?></p>
+                            <div class="form-group card-description">
+                                <strong>Descripción:</strong><br />
+                                <p class="card-text"><?php echo $randomProfile['description']; ?></p>
                             </div>
-                            <div class="d-flex justify-content-between">
+                            <div class="card-buttons">
                                 <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">
                                     <i class="fas fa-heart"></i> ¡Enlázate!
                                 </button>

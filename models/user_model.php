@@ -57,7 +57,8 @@ class UserModel
     // Método para obtener el perfil completo (perfil + foto) de un usuario por su ID
     function getFullProfile($id)
     {
-        $sql = "SELECT * FROM twn_users JOIN twn_user_photo ON twn_users.id = twn_user_photo.user_id WHERE twn_users.id = '$id'";
+        $msg = "";
+        $sql = $sql = "SELECT u.*, p.link FROM twn_users u JOIN twn_user_photo p ON u.id = p.id WHERE u.id = '$id'";
         $result = $this->conn->query($sql);
 
         if ($result && $result->num_rows > 0) {
@@ -69,7 +70,8 @@ class UserModel
 
             return $userInfo;
         } else {
-            return 'No se ha encontrado esa ID en la base de datos';
+            $msg = 'No se ha encontrado esa ID en la base de datos';
+            return $msg;
         }
     }
 
