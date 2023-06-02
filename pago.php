@@ -12,7 +12,7 @@ require_once "models/user_model.php";
 require_once "models/payment_model.php";
 
 $userModel = new UserModel($conn);
-$goldSub = $userModel->getGold($_SESSION["email"]);
+$goldSub = $userModel->getGold($_SESSION["user_id"]);
 $paymentModel = new PaymentClass($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

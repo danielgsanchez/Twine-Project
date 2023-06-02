@@ -267,9 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" class="form-control" id="pw" name="pw" placeholder="Elige una contraseña segura" required>
-                    <div id="pwHelp" class="form-text">Tu contraseña debe ser de al menos 8 caracteres, alfanumérica,
-                        con
-                        mayúsculas y minúsculas</div>
+                    <div id="pwHelp" class="form-text">Tu contraseña debe ser de al menos 8 caracteres, alfanumérica, con mayúsculas y minúsculas</div>
                     <span id="pwError" class="error"></span>
                 </div>
                 <div class="form-group">

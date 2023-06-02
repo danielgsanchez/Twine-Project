@@ -10,7 +10,13 @@ require_once "models/conn.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
-$goldSub = $userModel->getGold($_SESSION["email"]);
+$goldSub = $userModel->getGold($_SESSION["user_id"]);
+$arrayLikes = $userModel->getLikes($_SESSION["user_id"]);
+
+if ($goldSub == 0) {
+    header("Location: home.php");
+    exit;
+}
 
 ?>
 
@@ -111,7 +117,6 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .home-card {
@@ -120,6 +125,53 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
             padding: 20px;
             text-align: center;
             max-width: 400px;
+        }
+
+        .profile-item {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-description {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-image:hover .profile-description {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 999;
+        }
+
+        .profile-image {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-image img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .profile-description .profile-name {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .profile-description .profile-gender {
+            margin-top: 5px;
         }
 
         @media (max-width: 768px) {
@@ -187,25 +239,36 @@ $goldSub = $userModel->getGold($_SESSION["email"]);
             </li>
         </ul>
     </div>
-    <?php
-    if ((isset($goldSub)) && ($goldSub == 0)) { ?>
-        <div class="content">
-            <div class="home-card">
-                <h2>Hazte Oro</h2>
-                <p>¡Descubre todas las ventajas de suscribirte a Twine Gold, como ver quién te ha dado like y más!</p>
-                <button class="btn btn-primary" type="button">
-                    <a href="pago.php" class="text-decoration-none text-white">Suscríbete</a>
-                </button>
-            </div>
+
+    <div class="content">
+        <div class="home-card">
+            <?php foreach ($arrayLikes as $like) {
+                $profileImage = $like['profile_image'];
+                $firstName = $like['first_name'];
+                $lastName = $like['last_name'];
+                $gender = $like['gender_id'];
+                $id = $like['user_id'];
+
+                // Convertir el gender_id a una representación más legible
+                $genderText = ($gender == 'M') ? 'Hombre' : 'Mujer';
+
+                // Generar un nombre completo combinando el primer nombre y el apellido
+                $fullName = $firstName . ' ' . $lastName;
+            ?>
+                <div class="profile-item">
+                    <div class="profile-image">
+                        <img src="<?php echo $profileImage; ?>" alt="Profile Image">
+                        <div class="profile-description">
+                            <span class="profile-name"><?php echo $fullName; ?></span>
+                            <span class="profile-gender">Género: <?php echo $genderText; ?></span>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
         </div>
-    <?php } else { ?>
-        <div class="content">
-            <div class="home-card">
-                <h2>Bienvenido a Twine Gold</h2>
-                <p>Tu cuenta tiene una suscripción a Twine Gold. ¡Disfruta de todas las ventajas exclusivas!</p>
-            </div>
-        </div>
-    <?php } ?>
+    </div>
+
+    </div>
     <script>
         $(document).ready(function() {
             var $sidebar = $('#sidebar');

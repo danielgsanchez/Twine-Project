@@ -11,6 +11,14 @@ class UserModel
         $this->conn = $conn;
     }
 
+    function sanitizeInput($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
     // Método para obtener el ID de un usuario por su correo electrónico
     function getId($email)
     {
@@ -26,6 +34,8 @@ class UserModel
         } else {
             return 'Error en la consulta';
         }
+
+        $this->closeConnection();
     }
 
     // Método para obtener el perfil de un usuario por su ID
@@ -39,6 +49,8 @@ class UserModel
         } else {
             return 'No existe esa ID en al base de datos';
         }
+
+        $this->closeConnection();
     }
 
     // Método para obtener la foto de un usuario por su ID
@@ -52,6 +64,8 @@ class UserModel
         } else {
             return 'No existe esa ID en al base de datos';
         }
+
+        $this->closeConnection();
     }
 
     // Método para obtener el perfil completo (perfil + foto) de un usuario por su ID
@@ -73,12 +87,14 @@ class UserModel
             $msg = 'No se ha encontrado esa ID en la base de datos';
             return $msg;
         }
+
+        $this->closeConnection();
     }
 
     // Método para obtener el estado de suscripción 'gold' de un usuario por su correo electrónico
-    function getGold($email)
+    function getGold($id)
     {
-        $sql = "SELECT gold_sub FROM twn_users WHERE email = '$email'";
+        $sql = "SELECT gold_sub FROM twn_users WHERE id = '$id'";
 
         $result = $this->conn->query($sql);
 
@@ -89,6 +105,8 @@ class UserModel
         } else {
             return 'No se encuentra el usuario';
         }
+
+        $this->closeConnection();
     }
 
     // Método para iniciar sesión
@@ -105,6 +123,7 @@ class UserModel
 
             if ($result->num_rows == 1) {
                 $_SESSION["email"] = $email;
+                $_SESSION["user_id"] = $this->getId($email);
                 header('Location: home.php');
                 exit();
             } else {
@@ -116,6 +135,8 @@ class UserModel
         } else {
             die('Error en la consulta: ' . $this->conn->error);
         }
+
+        $this->closeConnection();
     }
 
     // Método para registrar un nuevo usuario
@@ -159,6 +180,8 @@ class UserModel
                 return $msg;
             }
         }
+
+        $this->closeConnection();
     }
 
     public function getRejectedProfiles($userId)
@@ -185,6 +208,8 @@ class UserModel
         } else {
             return [];
         }
+
+        $this->closeConnection();
     }
 
     public function getRandomProfile($userId)
@@ -196,7 +221,12 @@ class UserModel
         $query = "SELECT u.id, u.first_name, u.gender_id, u.description, p.link
         FROM twn_users u
         INNER JOIN twn_user_photo p ON u.id = p.user_id
-        WHERE u.id NOT IN (SELECT user2_id FROM twn_rejects WHERE user1_id = $userId) AND u.id != $userId
+        WHERE u.id != $userId
+          AND u.id NOT IN (
+              SELECT user2_id FROM twn_matches WHERE user1_id = $userId
+              UNION
+              SELECT user1_id FROM twn_matches WHERE user2_id = $userId
+          )
         ORDER BY RAND()
         LIMIT 1";
 
@@ -226,6 +256,8 @@ class UserModel
         } else {
             return null;
         }
+
+        $this->closeConnection();
     }
 
     // Función para agregar o actualizar un registro de coincidencia en la base de datos
@@ -247,6 +279,8 @@ class UserModel
         // Si no existe un registro de coincidencia, realizar la inserción en la base de datos
         $insertQuery = "INSERT INTO twn_matches (user1_id, user2_id, timestamp) VALUES ($userId, $profileId, CURRENT_TIMESTAMP)";
         mysqli_query($this->conn, $insertQuery);
+
+        $this->closeConnection();
     }
 
 
@@ -269,11 +303,156 @@ class UserModel
         // Si no existe un registro de rechazo, realizar la inserción en la base de datos
         $insertQuery = "INSERT INTO twn_rejects (user1_id, user2_id, timestamp) VALUES ($userId, $profileId, CURRENT_TIMESTAMP)";
         mysqli_query($this->conn, $insertQuery);
+
+        $this->closeConnection();
     }
 
-    function updateProfile()
+    function updateProfile($id, $nombre, $apellido, $nick, $genero, $descripcion, $img)
     {
-        //
+        $msg = "";
+        if (!empty($img)) {
+            // Preparar la consulta SQL para actualizar la ruta de la imagen en la tabla twn_user_photo
+            $sqlUpdatePhoto = "UPDATE twn_user_photo SET link = ? WHERE user_id = ?";
+
+            // Preparar la declaración para actualizar la ruta de la imagen
+            $stmtUpdatePhoto = $this->conn->prepare($sqlUpdatePhoto);
+
+            // Vincular los parámetros para actualizar la ruta de la imagen
+            $stmtUpdatePhoto->bind_param("si", $img, $id);
+
+            // Ejecutar la consulta para actualizar la ruta de la imagen
+            $stmtUpdatePhoto->execute();
+
+            // Verificar si la actualización de la ruta de la imagen fue exitosa
+            if ($stmtUpdatePhoto->affected_rows > 0) {
+                $msg = "Actualización de imagen exitosa. ";
+            } else {
+                $msg = "Error en la actualización de la imagen. ";
+            }
+        }
+
+        if (empty($descripcion)) {
+            // Preparar la consulta SQL con marcadores de posición
+            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, screen_name = ? WHERE id = ?";
+
+            // Preparar la declaración
+            $stmt = $this->conn->prepare($sql);
+
+            // Vincular los parámetros
+            $stmt->bind_param("ssssi", $nombre, $apellido, $genero, $nick, $id);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            // Verificar si la actualización fue exitosa
+            if ($stmt->affected_rows > 0) {
+                $msg = "Actualización exitosa";
+                return $msg;
+            } else {
+                $msg = "Error en la actualización";
+                return $msg;
+            }
+        } else {
+            // Preparar la consulta SQL con marcadores de posición
+            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, description = ?, screen_name = ?  WHERE id = ?";
+
+            // Preparar la declaración
+            $stmt = $this->conn->prepare($sql);
+
+            // Vincular los parámetros
+            $stmt->bind_param("sssssi", $nombre, $apellido, $genero, $descripcion, $nick, $id);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            // Verificar si la actualización fue exitosa
+            if ($stmt->affected_rows > 0) {
+                $msg = "Actualización exitosa";
+                return $msg;
+            } else {
+                $msg = "Error en la actualización";
+                return $msg;
+            }
+        }
+
+        $this->closeConnection();
+    }
+
+    function updatePassword($id, $newPassword)
+    {
+        $newPassword = md5($newPassword);
+        $sql = "UPDATE twn_users SET password = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $newPassword, $id);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+
+        $this->closeConnection();
+    }
+
+    function updateEmail($id, $newEmail)
+    {
+        $sql = "UPDATE twn_users SET email = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("si", $newEmail, $id);
+        $stmt->execute();
+
+        // Comprobamos si la actualización fue exitosa
+        if ($stmt->affected_rows > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+
+        $this->closeConnection();
+    }
+
+    function getLikes($id){
+        $sub = $this->getGold($id);
+        if ($sub == "1") {
+            $sql = "SELECT user_id1 FROM twn_likes WHERE user_id2 = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $results_array = $result->fetch_all(MYSQLI_ASSOC);
+            
+            $likes_data = array(); // Array para almacenar los datos de likes
+            
+            foreach ($results_array as $row) {
+                $liked_user_id = $row['user_id1'];
+                
+                // Consulta para obtener la imagen de perfil y el nombre del usuario
+                $profile_sql = "SELECT u.first_name, u.last_name, u.gender_id, u.description, p.link FROM twn_users u JOIN twn_user_photo p ON u.id = p.user_id WHERE u.id = ?";
+                $profile_stmt = $this->conn->prepare($profile_sql);
+                $profile_stmt->bind_param("i", $liked_user_id);
+                $profile_stmt->execute();
+                $profile_result = $profile_stmt->get_result();
+                $profile_data = $profile_result->fetch_assoc();
+                
+                // Agregar los datos al array de likes_data
+                $likes_data[] = array(
+                    'user_id' => $liked_user_id,
+                    'profile_image' => $profile_data['link'],
+                    'first_name' => $profile_data['first_name'],
+                    'last_name' => $profile_data['last_name'],
+                    'gender_id' => $profile_data['gender_id'],
+                    'description' => $profile_data['description']
+                );
+                
+                $profile_stmt->close();
+            }
+            
+            return $likes_data;
+        } else {
+            $msg = "No estás suscrito";
+            return $msg;
+        }
     }
 
     // Método para cerrar la conexión a la base de datos

@@ -10,39 +10,16 @@ require_once "models/conn.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
-$goldSub = $userModel->getGold($_SESSION["email"]);
+$goldSub = $userModel->getGold($_SESSION["user_id"]);
 $profileData = $userModel->getFullProfile($_SESSION["user_id"]);
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Obtener la información del archivo subido
-    $file = $_FILES["profile-image"];
-
-    // Verificar si se seleccionó un archivo
-    if ($file["error"] === UPLOAD_ERR_OK) {
-        // Obtener el nombre y la ubicación temporal del archivo
-        $filename = $file["name"];
-        $tempFilePath = $file["tmp_name"];
-
-        // Mover el archivo a la ubicación deseada
-        $destination = "ruta_de_destino/" . $filename;
-        move_uploaded_file($tempFilePath, $destination);
-
-        // Actualizar la ruta de la imagen en la base de datos
-        // ...
-
-        // Resto del código para procesar y guardar los otros campos del formulario
-        // ...
-
-        // Redireccionar o mostrar un mensaje de éxito
-        // ...
-    } else {
-        // Hubo un error al subir el archivo
-        // Manejar el error adecuadamente
-        // ...
-    }
+if (isset($_REQUEST['msg'])) {
+    $msg = $_REQUEST['msg'];
 }
 
-
+if (isset($_REQUEST['pfmsg'])) {
+    $pfmsg = $_REQUEST['pfmsg'];
+}
 
 ?>
 
@@ -64,7 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             margin: 0;
             padding: 0;
             background-color: #fcdfe2;
-            /* Cambiar el color de fondo a un rosa muy ligero */
         }
 
         .sidebar {
@@ -74,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             height: 100vh;
             width: 80px;
             background-color: #f8f9fa;
-            /* Cambiar el color de fondo a light */
             transition: width 0.3s ease-in-out;
         }
 
@@ -148,7 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Ajustar la altura al 100% del viewport */
         }
 
         .form-group textarea {
@@ -164,38 +138,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             justify-content: center;
             align-items: flex-start;
             padding: 20px;
+            margin-top: 60px;
         }
 
         .card {
             background-color: #fff;
             border-radius: 5px;
             padding: 20px;
-            min-width: 600px;
+            max-width: 600px;
             margin-right: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            margin-top: 20px;
         }
 
         .profile-image {
             border-radius: 128px;
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
+            max-width: 256px;
+        }
+
+        .error-text{
+            color:red;
         }
 
         @media (max-width: 768px) {
@@ -285,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="container">
             <div class="card">
                 <h2>Editar perfil</h2><br />
-                <form action="guardar_perfil.php" method="POST" id="perfilForm" name="perfilForm">
+                <form action="controllers/save_profile.php" method="POST" id="profileForm" name="profileForm" enctype="multipart/form-data">
                     <div class="mb-3 d-flex justify-content-center align-items-center">
                         <div class="position-relative">
                             <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto;"><br />
@@ -293,14 +254,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nombre:</label>
-                        <input type="text" id="name" name="name" value=<?php echo $profileData[0]['first_name'] ?> class="form-control" required>
+                        <label for="first_name" class="form-label">Nombre:</label>
+                        <input type="text" id="first_name" name="first_name" value=<?php echo $profileData[0]['first_name'] ?> class="form-control" required>
                         <small id="name-error" class="error-text"></small>
                     </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label">Apellido:</label>
                         <input type="text" id="last_name" name="last_name" value=<?php echo $profileData[0]['last_name'] ?> class="form-control" required>
                         <small id="last_name-error" class="error-text"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="screen_name" class="form-label">Nick:</label>
+                        <input type="text" id="screen_name" name="screen_name" value=<?php echo $profileData[0]['screen_name'] ?> class="form-control" required>
+                        <small id="screen_name-error" class="error-text"></small>
                     </div>
                     <div class="mb-3">
                         <label for="gender" class="form-label">Género:</label>
@@ -314,6 +280,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <label for="description" class="form-label">Descripción:</label>
                         <textarea id="description" name="description" class="form-control" rows="4"><?php echo $profileData[0]["description"] ?></textarea>
                     </div>
+                    <?php
+                    if (!empty($pfmsg)) {
+                        echo "<p style='color:red;'>".$pfmsg."</p>";
+                    }
+                    ?>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Guardar perfil</button>
                     </div>
@@ -321,19 +292,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
             <div class="card">
                 <h2>Cambiar credenciales</h2>
-                <form action="cambiar_credenciales.php" method="POST" id="credForm" name="credForm">
+                <form action="controllers/save_credentials.php" method="POST" id="credForm" name="credForm">
                     <div class="mb-3">
+                        <h6>Cambiar email:</h6>
                         <label for="email" class="form-label">Correo electrónico:</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                        <input type="email" id="email" name="email" class="form-control" value="<?php echo $profileData[0]["email"] ?>" required>
+                        <small id="email-error" class="error-text"></small>
                     </div>
+                    <hr/>
+                    <div class="mb-3">
+                        <h6>Cambiar contraseña:</h6>
+                        <label for="new-password" class="form-label">Nueva contraseña:</label>
+                        <input type="password" id="new-password" name="new-password" class="form-control">
+                        <small id="new-password-error" class="error-text"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="conf-password" class="form-label">Confirmar nueva contraseña:</label>
+                        <input type="password" id="conf-password" name="conf-password" class="form-control" required>
+                        <small id="conf-password-error" class="error-text"></small>
+                    </div>
+                    <hr/>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña actual:</label>
                         <input type="password" id="password" name="password" class="form-control" required>
+                        <small id="password-error" class="error-text"></small>
                     </div>
-                    <div class="mb-3">
-                        <label for="new-password" class="form-label">Nueva contraseña:</label>
-                        <input type="password" id="new-password" name="new-password" class="form-control" required>
-                    </div>
+                    <?php
+                    if (!empty($msg)) {
+                        echo "<p style='color:red;'>".$msg."</p>";
+                    }
+                    ?>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary">Cambiar credenciales</button>
                     </div>
@@ -359,6 +347,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         });
     </script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var profileForm = document.getElementById("profileForm");
+            var credentialsForm = document.getElementById("credForm");
+
+            document.getElementById('credForm').addEventListener('submit', function(event) {
+                if (!validateCredForm()) {
+                    event.preventDefault();
+                }
+            });
+
+            document.getElementById('profileForm').addEventListener('submit', function(event) {
+                if (!validateProfileForm()) {
+                    event.preventDefault(); // Evitar el envío del formulario si la validación no es exitosa
+                }
+            });
+        });
+
+
         // Función para mostrar un mensaje de error junto al campo
         function showError(fieldId, errorMessage) {
             var errorElement = document.getElementById(fieldId + "-error");
@@ -376,49 +382,97 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Validación del formulario antes de enviarlo
         function validateProfileForm() {
             var isValid = true;
+            var profileImage = document.getElementById("profile-image").value;
+            var name = document.getElementById("first_name").value;
+            var lastName = document.getElementById("last_name").value;
+            var screenName = document.getElementById("screen_name").value;
+            var gender = document.getElementById("gender").value;
 
             // Validar el campo de imagen
-            var profileImage = document.getElementById("profile-image").value;
-            if (profileImage === "") {
-                showError("profile-image", "Por favor, seleccione una imagen de perfil.");
+            if (profileImage.trim() === "") {
                 isValid = false;
+                showError("profile-image", "Por favor, seleccione una imagen de perfil.");
             } else {
                 hideError("profile-image");
             }
 
             // Validar el campo de nombre
-            var name = document.getElementById("name").value;
-            if (name === "") {
-                showError("name", "Por favor, ingrese su nombre.");
+            if (name.trim() === "") {
                 isValid = false;
+                showError("name", "El nombre no puede estar vacío.");
             } else {
                 hideError("name");
             }
 
             // Validar el campo de apellido
-            var lastName = document.getElementById("last_name").value;
-            if (lastName === "") {
-                showError("last_name", "Por favor, ingrese su apellido.");
+            if (lastName.trim() === "") {
                 isValid = false;
+                showError("last_name", "El apellido no puede estar vacío.");
             } else {
                 hideError("last_name");
             }
 
-            // Validar el campo de género
-            var gender = document.getElementById("gender").value;
-            if (gender === "") {
-                showError("gender", "Por favor, seleccione su género.");
+            // Validar el campo de nick
+            if (screenName.trim() === "") {
                 isValid = false;
+                showError("screen_name", "El nick no puede estar vacío.");
+            } else {
+                hideError("screen_name");
+            }
+
+            // Validar el campo de género
+            if (gender.trim() === "") {
+                isValid = false;
+                showError("gender", "Por favor, selecciona tu género.");
             } else {
                 hideError("gender");
             }
 
-            // Resto de las validaciones del formulario...
-
             return isValid;
         }
 
-        
+        function validateCredForm() {
+            var isValid = true;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var newPassword = document.getElementById('new-password').value;
+            var confPassword = document.getElementById('conf-password').value;
+            // Validar la contraseña nueva utilizando una expresión regular
+            var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+            // Validar el campo de correo electrónico
+            if (email.trim() === "") {
+                showError("email", "Por favor, ingrese su correo electrónico.");
+                isValid = false;
+            } else {
+                hideError("email");
+            }
+
+            //Validar nueva contraseña si se introduce
+            if (newPassword.trim() !== "") {
+                // Validar el campo de nueva contraseña
+                if (!passwordRegex.test(newPassword.trim())) {
+                    showError("new-password", "La nueva contraseña debe tener al menos 8 caracteres, una letra minúscula, una letra mayúscula y un número.");
+                    isValid = false;
+                } else {
+                    hideError("new-password");
+                }
+                if (newPassword !== confPassword) {
+                    showError("conf-password", "Las contraseñas deben coincidir.");
+                    isValid = false;
+                }
+            }
+
+            // Validar el campo de contraseña
+            if (password.trim() === "") {
+                showError("password", "Por favor, ingrese su contraseña actual.");
+                isValid = false;
+            } else {
+                hideError("password");
+            }
+
+            return isValid;
+        }
     </script>
 </body>
 

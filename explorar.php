@@ -31,6 +31,8 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
     <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
     <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="explorar.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <title>¡Bienvenido a Twine!</title>
     <style>
         body {
@@ -133,8 +135,6 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            min-width: 600px;
-            min-height: 100vh;
             max-height: 100vh;
             max-width: 600px;
         }
@@ -158,7 +158,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
         .card-description {
             flex-grow: 1;
         }
-        
+
         .card-container {
             display: flex;
             justify-content: center;
@@ -184,6 +184,18 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             .content {
                 margin-left: 60px;
             }
+        }
+
+        /* Estilo personalizado para el cuadro de éxito de coincidencia */
+        .toast-success.match {
+            background-color: #ff6190;
+            /* Color rosa */
+        }
+
+        /* Estilo personalizado para el cuadro de éxito de rechazo */
+        .toast-success.reject {
+            background-color: #dc3545;
+            /* Color rojo */
         }
     </style>
 </head>
@@ -238,32 +250,34 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
         </ul>
     </div>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 card-container">
-                <?php if ($randomProfile) : ?>
-                    <div class="card">
-                        <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
-                        <div class="card-body">
-                            <h5 class="card-title"><strong>Nombre: </strong><?php echo $randomProfile['first_name']; ?></h5>
-                            <p class="card-text"><strong>Género: </strong> <?php echo $randomProfile['gender_id']; ?></p>
-                            <div class="form-group card-description">
-                                <strong>Descripción:</strong><br />
-                                <p class="card-text"><?php echo $randomProfile['description']; ?></p>
-                            </div>
-                            <div class="card-buttons">
-                                <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">
-                                    <i class="fas fa-heart"></i> ¡Enlázate!
-                                </button>
-                                <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">
-                                    <i class="fas fa-ban"></i> Pasar
-                                </button>
+    <div class="content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 card-container">
+                    <?php if ($randomProfile) : ?>
+                        <div class="card">
+                            <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Nombre: </strong><?php echo $randomProfile['first_name']; ?></h5>
+                                <p class="card-text"><strong>Género: </strong> <?php echo $randomProfile['gender_id']; ?></p>
+                                <div class="form-group card-description">
+                                    <strong>Descripción:</strong><br />
+                                    <p class="card-text"><?php echo $randomProfile['description']; ?></p>
+                                </div>
+                                <div class="card-buttons">
+                                    <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">
+                                        <i class="fas fa-heart"></i> ¡Enlázate!
+                                    </button>
+                                    <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">
+                                        <i class="fas fa-ban"></i> Pasar
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php else : ?>
-                    <p>No se encontraron perfiles disponibles.</p>
-                <?php endif; ?>
+                    <?php else : ?>
+                        <p>No se encontraron perfiles disponibles.</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
