@@ -66,8 +66,22 @@ $user1 = $userModel->getProfile($_SESSION["user_id"]);
                 });
             }
 
-            // Actualizar los mensajes cada cierto intervalo
-            setInterval(getMessages, 1000);
+            // Obtener los usuarios con los que hay match
+            function getMatchedUsers() {
+                $.ajax({
+                    url: "get_matched_users.php",
+                    method: "GET",
+                    success: function(data) {
+                        $("#matchedUsers").html(data);
+                    }
+                });
+            }
+
+            // Actualizar los mensajes y los usuarios con match cada cierto intervalo
+            setInterval(function() {
+                getMessages();
+                getMatchedUsers();
+            }, 1000);
 
             // Manejar el envío del formulario
             $("form").submit(function(e) {
@@ -79,6 +93,11 @@ $user1 = $userModel->getProfile($_SESSION["user_id"]);
 </head>
 <body>
     <h1>Chat</h1>
+    <h2>Usuarios con match:</h2>
+    <div id="matchedUsers">
+        <!-- Aquí se mostrarán los usuarios con los que hay match -->
+    </div>
+    <h2>Mensajes:</h2>
     <div id="messages">
         <!-- Aquí se mostrarán los mensajes -->
     </div>
@@ -88,4 +107,3 @@ $user1 = $userModel->getProfile($_SESSION["user_id"]);
     </form>
 </body>
 </html>
-
