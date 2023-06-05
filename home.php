@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (empty($_SESSION["email"])) {
@@ -10,7 +11,9 @@ require_once "models/conn.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
+$userModel->checkBan();
 $goldSub = $userModel->getGold($_SESSION["user_id"]);
+
 ?>
 
 <!DOCTYPE html>

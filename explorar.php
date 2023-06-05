@@ -11,6 +11,7 @@ require_once "models/conn.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
+$userModel->checkBan();
 $goldSub = $userModel->getGold($_SESSION["email"]);
 
 $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);

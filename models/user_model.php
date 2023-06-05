@@ -122,10 +122,16 @@ class UserModel
             $result = $stmt->get_result();
 
             if ($result->num_rows == 1) {
-                $_SESSION["email"] = $email;
-                $_SESSION["user_id"] = $this->getId($email);
-                header('Location: home.php');
-                exit();
+                $user = $result->fetch_assoc();
+                if ($user['is_banned'] == 1) {
+                    $_SESSION["email"] = $email;
+                    header("Location: banned.php");
+                } else {
+                    $_SESSION["email"] = $email;
+                    $_SESSION["user_id"] = $this->getId($email);
+                    header('Location: home.php');
+                    exit();
+                }
             } else {
                 $error = "Credenciales incorrectas";
                 return $error;
@@ -452,6 +458,38 @@ class UserModel
         } else {
             $msg = "No estás suscrito";
             return $msg;
+        }
+    }
+
+    public function checkBan() {
+        if (empty($_SESSION["email"])) {
+            // El usuario no ha iniciado sesión, realiza la redirección apropiada
+            header("Location: index.php");
+            exit;
+        } else {
+            $email = $_SESSION["email"];
+            $sql = "SELECT * FROM twn_users WHERE email = ?";
+            $stmt = $this->conn->prepare($sql);
+    
+            if ($stmt) {
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+    
+                if ($result->num_rows == 1) {
+                    $user = $result->fetch_assoc();
+                    if ($user['is_banned'] == 1) {
+                        header("Location: banned.php");
+                        exit;
+                    }
+                } else {
+                    // No se encontró un usuario con el correo electrónico dado
+                    // Maneja el caso apropiadamente, redirecciona o muestra un mensaje de error
+                }
+            } else {
+                // Error en la consulta preparada
+                // Maneja el caso apropiadamente, redirecciona o muestra un mensaje de error
+            }
         }
     }
 

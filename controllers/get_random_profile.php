@@ -2,14 +2,10 @@
 
 session_start();
 
-// models/conn.php - Tu archivo de conexión a la base de datos
 require_once "../models/conn.php";
-// models/user_model.php - Tu archivo con el modelo de usuario
 require_once "../models/user_model.php";
 
-// Crear una instancia del modelo de usuario
 $userModel = new UserModel($conn);
-
 // Obtener un perfil aleatorio
 $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 

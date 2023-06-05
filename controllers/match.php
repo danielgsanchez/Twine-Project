@@ -1,12 +1,11 @@
 <?php
+
 session_start();
 
 if (empty($_SESSION["email"])) {
     header("Location: index.php");
     exit;
 }
-
-// Aquí incluye los archivos necesarios y realiza cualquier configuración adicional
 
 // Verificar si se envió una solicitud AJAX de coincidencia
 if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'match') {

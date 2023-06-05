@@ -94,22 +94,22 @@ class PaymentClass
 
         // Validar el formato y la validez de los campos de la tarjeta de crédito
         if (empty($number) || !preg_match($cardNumberRegex, $number)) {
-            $error = "Invalid card number format.";
+            $error = "Número de tarjeta inválido.";
             return json_encode(["success" => false, "message" => $error]);
         }
 
         if (empty($name) || !preg_match($nameRegex, $name)) {
-            $error = "Invalid cardholder name format.";
+            $error = "Nombre del titular inválido.";
             return json_encode(["success" => false, "message" => $error]);
         }
 
         if (empty($expire) || !preg_match($expiryDateRegex, $expire)) {
-            $error = "Invalid expiry date format. Use MM/YY format.";
+            $error = "Fecha de expiración inválida.";
             return json_encode(["success" => false, "message" => $error]);
         }
 
         if (empty($cvc) || !preg_match($cvcRegex, $cvc)) {
-            $error = "Invalid CVC format.";
+            $error = "CVC/CVV inválido.";
             return json_encode(["success" => false, "message" => $error]);
         }
 
