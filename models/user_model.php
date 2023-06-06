@@ -418,7 +418,8 @@ class UserModel
         $this->closeConnection();
     }
 
-    function getLikes($id){
+    function getLikes($id)
+    {
         $sub = $this->getGold($id);
         if ($sub == "1") {
             $sql = "SELECT user_id1 FROM twn_likes WHERE user_id2 = ?";
@@ -427,12 +428,12 @@ class UserModel
             $stmt->execute();
             $result = $stmt->get_result();
             $results_array = $result->fetch_all(MYSQLI_ASSOC);
-            
+
             $likes_data = array(); // Array para almacenar los datos de likes
-            
+
             foreach ($results_array as $row) {
                 $liked_user_id = $row['user_id1'];
-                
+
                 // Consulta para obtener la imagen de perfil y el nombre del usuario
                 $profile_sql = "SELECT u.first_name, u.last_name, u.gender_id, u.description, p.link FROM twn_users u JOIN twn_user_photo p ON u.id = p.user_id WHERE u.id = ?";
                 $profile_stmt = $this->conn->prepare($profile_sql);
@@ -440,7 +441,7 @@ class UserModel
                 $profile_stmt->execute();
                 $profile_result = $profile_stmt->get_result();
                 $profile_data = $profile_result->fetch_assoc();
-                
+
                 // Agregar los datos al array de likes_data
                 $likes_data[] = array(
                     'user_id' => $liked_user_id,
@@ -450,10 +451,10 @@ class UserModel
                     'gender_id' => $profile_data['gender_id'],
                     'description' => $profile_data['description']
                 );
-                
+
                 $profile_stmt->close();
             }
-            
+
             return $likes_data;
         } else {
             $msg = "No estás suscrito";
@@ -461,7 +462,8 @@ class UserModel
         }
     }
 
-    public function checkBan() {
+    public function checkBan()
+    {
         if (empty($_SESSION["email"])) {
             // El usuario no ha iniciado sesión, realiza la redirección apropiada
             header("Location: index.php");
@@ -470,12 +472,12 @@ class UserModel
             $email = $_SESSION["email"];
             $sql = "SELECT * FROM twn_users WHERE email = ?";
             $stmt = $this->conn->prepare($sql);
-    
+
             if ($stmt) {
                 $stmt->bind_param('s', $email);
                 $stmt->execute();
                 $result = $stmt->get_result();
-    
+
                 if ($result->num_rows == 1) {
                     $user = $result->fetch_assoc();
                     if ($user['is_banned'] == 1) {
@@ -490,6 +492,51 @@ class UserModel
                 // Error en la consulta preparada
                 // Maneja el caso apropiadamente, redirecciona o muestra un mensaje de error
             }
+        }
+    }
+
+    function getMatches($userId)
+    {
+        // Realizar la consulta en la base de datos para obtener los matches recíprocos entre dos usuarios
+        $sql = "SELECT DISTINCT u.id, u.first_name, u.last_name
+        FROM twn_matches AS m
+        INNER JOIN twn_users AS u ON (m.user1_id = u.id OR m.user2_id = u.id)
+        WHERE ((m.user1_id = ? AND m.user2_id IN (SELECT user1_id FROM twn_matches WHERE user2_id = ?))
+        OR (m.user2_id = ? AND m.user1_id IN (SELECT user2_id FROM twn_matches WHERE user1_id = ?)))
+        AND u.id != ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("iiiii", $userId, $userId, $userId, $userId, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Iterar sobre los resultados de la consulta y construir un array de nombres y chat IDs
+        $matches = array();
+        while ($row = $result->fetch_assoc()) {
+            $match = array(
+                'id' => $row['id'],
+                'name' => $row['first_name'] . ' ' . $row['last_name']
+            );
+            $matches[] = $match;
+        }
+
+        // Devolver el array de nombres de los usuarios con match y sus respectivos chat IDs
+        return $matches;
+    }
+
+    function getChatId($userId, $user2Id)
+    {
+        // Consulta SQL para buscar el ID del chat entre los dos usuarios
+        $sql = "SELECT id FROM twn_chats WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("iiii", $userId, $user2Id, $user2Id, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row["id"];
+        } else {
+            return null; // No se encontró un chat entre los dos usuarios
         }
     }
 

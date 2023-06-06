@@ -127,6 +127,25 @@ class AdminModel
         }
     }
 
+    public function deleteTicket($ticketId) {
+        $stmt = $this->conn->prepare("SELECT * FROM twn_reports WHERE id = ?");
+        $stmt->bind_param("i", $ticketId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            // El ticket no existe
+            return false;
+        }
+
+        // Eliminar el ticket de la base de datos
+        $stmt = $this->conn->prepare("DELETE FROM twn_reports WHERE id = ?");
+        $stmt->bind_param("i", $ticketId);
+        $stmt->execute();
+
+        return true;
+    }
+
     public function closeConnection(): void
     {
         $this->conn->close();

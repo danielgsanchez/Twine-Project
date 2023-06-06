@@ -13,7 +13,6 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'match') {
     $profileId = $_REQUEST['profile_id'];
 
     // Llamar a la función addMatch del modelo de usuario
-    require_once __DIR__ . "/../models/conn.php";
     require_once __DIR__ . "/../models/user_model.php";
 
     $userModel = new UserModel($conn);

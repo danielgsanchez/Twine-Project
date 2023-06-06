@@ -5,8 +5,7 @@ session_start();
 if (empty($_SESSION["email"])) {
     header("Location: index.php");
     exit;
-}
-elseif ($_SESSION["email"] != "admin@admin.es"){
+} elseif ($_SESSION["email"] != "admin@admin.es") {
     header("Location: error.php");
     exit;
 }
@@ -169,31 +168,36 @@ $tickets = $aM->getUserTickets();
             </li>
         </ul>
     </div>
-        <div class="content">
-            <div class="home-card">
+    <div class="content">
+        <div class="home-card">
             <h2>Tickets de Usuario</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario 1</th>
-                    <th>Usuario 2</th>
-                    <th>Razón</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($tickets as $ticket) : ?>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td><?php echo $ticket['id']; ?></td>
-                        <td><?php echo $ticket['user1_first_name'] . ' ' . $ticket['user1_last_name']; ?></td>
-                        <td><?php echo $ticket['user2_first_name'] . ' ' . $ticket['user2_last_name']; ?></td>
-                        <td><?php echo $ticket['reason']; ?></td>
+                        <th>ID</th>
+                        <th>Usuario 1</th>
+                        <th>Usuario 2</th>
+                        <th>Razón</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-            </div>
+                </thead>
+                <tbody>
+                    <?php foreach ($tickets as $ticket) : ?>
+                        <tr>
+                            <td><?php echo $ticket['id']; ?></td>
+                            <td><?php echo $ticket['user1_first_name'] . ' ' . $ticket['user1_last_name']; ?></td>
+                            <td><?php echo $ticket['user2_first_name'] . ' ' . $ticket['user2_last_name']; ?></td>
+                            <td><?php echo $ticket['reason']; ?></td>
+                            <td>
+                                <button class="delete-ticket btn btn-primary" data-ticket-id="<?php echo $ticket['id']; ?>">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
+    </div>
     <script>
         $(document).ready(function() {
             var $sidebar = $('#sidebar');
@@ -208,6 +212,29 @@ $tickets = $aM->getUserTickets();
                 $sidebar.removeClass('sidebar-expanded');
                 $content.css('margin-left', '80px');
             });
+
+            $(".delete-ticket").click(function() {
+                var ticketId = $(this).data("ticket-id");
+                var $button = $(this);
+
+                // Realizar la llamada AJAX para eliminar el ticket
+                $.ajax({
+                    url: "controllers/delete_ticket.php",
+                    method: "POST",
+                    data: {
+                        ticketId: ticketId
+                    },
+                    success: function(response) {
+                        if (response == "success") {
+                            // Actualizar la interfaz para mostrar el popup y eliminar la fila
+                            alert("Ticket borrado");
+                            $button.closest("tr").remove();
+                        } else {
+                            alert("Error al borrar el ticket");
+                        }
+                    }
+                });
+            })
         });
     </script>
 </body>

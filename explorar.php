@@ -187,16 +187,12 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             }
         }
 
-        /* Estilo personalizado para el cuadro de éxito de coincidencia */
         .toast-success.match {
             background-color: #ff6190;
-            /* Color rosa */
         }
 
-        /* Estilo personalizado para el cuadro de éxito de rechazo */
         .toast-success.reject {
             background-color: #dc3545;
-            /* Color rojo */
         }
     </style>
 </head>
