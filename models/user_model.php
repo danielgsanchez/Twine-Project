@@ -125,9 +125,11 @@ class UserModel
                 $user = $result->fetch_assoc();
                 if ($user['is_banned'] == 1) {
                     $_SESSION["email"] = $email;
+                    $_SESSION["user_id"] = $this->getId($email);
                     header("Location: banned.php");
                 } elseif ($user['email'] == 'admin@admin.es') {
                     $_SESSION["email"] = $email;
+                    $_SESSION["user_id"] = $this->getId($email);
                     header("Location: admin_page.php");
                 } else {
                     $_SESSION["email"] = $email;
