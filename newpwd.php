@@ -12,7 +12,7 @@ $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // Obtener los valores ingresados en el formulario
-  $email = $_REQUEST['email'];
+  $email = $_POST['email'];
 
   // Sanitizar el valor del correo electrónico
   $email = $conn->real_escape_string($email);

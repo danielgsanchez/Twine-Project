@@ -7,7 +7,6 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
-require_once "models/conn.php";
 require_once "models/user_model.php";
 require_once "models/payment_model.php";
 

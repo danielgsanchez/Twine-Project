@@ -13,9 +13,9 @@ if (empty($_SESSION["email"])) {
 require_once "models/conn.php";
 require_once "models/admin_model.php";
 
-$aM = new AdminModel($conn);
-$userCount = $aM->getRegisteredUsers();
-$goldCount = $aM->getGoldUsers();
+$adminModel = new AdminModel($conn);
+$userCount = $adminModel->getRegisteredUsers();
+$goldCount = $adminModel->getGoldUsers();
 ?>
 
 <!DOCTYPE html>

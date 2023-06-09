@@ -16,8 +16,8 @@ require_once 'models/conn.php';
 require_once 'models/user_model.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $mLogin = new UserModel($conn);
-  $error = $mLogin->userLogin($_REQUEST["email"], $_REQUEST["password"]);
+  $userModel = new UserModel($conn);
+  $error = $userModel->userLogin($_REQUEST["email"], $_REQUEST["password"]);
 }
 
 ?>

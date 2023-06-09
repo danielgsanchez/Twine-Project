@@ -13,8 +13,8 @@ if (empty($_SESSION["email"])) {
 require_once "models/conn.php";
 require_once "models/admin_model.php";
 
-$aM = new AdminModel($conn);
-$tickets = $aM->getUserTickets();
+$adminModel = new AdminModel($conn);
+$tickets = $adminModel->getUserTickets();
 ?>
 
 <!DOCTYPE html>

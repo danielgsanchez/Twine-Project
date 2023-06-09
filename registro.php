@@ -11,8 +11,8 @@ require_once 'models/conn.php';
 require_once 'models/user_model.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $signupUser = new UserModel($conn);
-    $msg = $signupUser->userSignup($_REQUEST['nombre'], $_REQUEST['email'], $_REQUEST['pw'], $_REQUEST['pwConfirm']);
+    $userModel = new UserModel($conn);
+    $msg = $userModel->userSignup($_REQUEST['nombre'], $_REQUEST['email'], $_REQUEST['pw'], $_REQUEST['pwConfirm']);
     if ($msg['successful']) {
         echo '
         <script>
