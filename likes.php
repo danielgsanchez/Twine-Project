@@ -5,6 +5,9 @@ session_start();
 if (empty($_SESSION["email"])) {
     header("Location: index.php");
     exit;
+} elseif ($_SESSION["email"] == "admin@admin.es") {
+    header("Location: admin_page.php");
+    exit;
 }
 
 require_once "models/conn.php";

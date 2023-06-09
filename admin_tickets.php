@@ -166,6 +166,12 @@ $tickets = $aM->getUserTickets();
                     <span class="text">Comentarios</span>
                 </a>
             </li>
+            <li>
+                <a href="logout.php">
+                    <span class="icon"><i class="fas fa-power-off"></i></span>
+                    <span class="text">Desconectar</span>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="content">
