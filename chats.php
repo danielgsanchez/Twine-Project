@@ -89,6 +89,31 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             });
         }
 
+        // Función para enviar un reporte de usuario
+        function sendReport() {
+            var userID = $("#reportBtn").data('userid');
+            var reason = $('#reason').val();
+            $.ajax({
+                url: "controllers/send_report.php",
+                method: "POST",
+                data: {
+                    userID: userID,
+                    reason: reason
+                },
+                success: function(data) {
+                    if (data === "report_sent") {
+                        alert("El reporte ha sido enviado.");
+                    } else {
+                        alert("Error al enviar el reporte. Inténtalo de nuevo.");
+                        console.log(data);
+                    }
+                },
+                error: function() {
+                    alert("Error al enviar el reporte. Inténtalo de nuevo.");
+                }
+            });
+        }
+
         $(document).ready(function() {
             // Actualizar los mensajes y los usuarios con match cada cierto intervalo
             setInterval(function() {
@@ -358,25 +383,71 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             </li>
         </ul>
     </div>
-    <div class="content">
-        <h1>Chat</h1>
-        <h2>Usuarios con match:</h2>
-        <select id="matchedUsers" class="matched-users">
-            <option value=""></option>
-            <?php foreach ($matches as $match) : ?>
-                <option value="<?php echo $match['id']; ?>" data-chatid="<?php echo $userModel->getChatId(($_SESSION["user_id"]), $match['id']); ?>"><?php echo $match['name']; ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div id="chatContainer">
-            <h2>Mensajes:</h2>
-            <div id="messages" class="messages">
+
+    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Reportar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="reason">Razón del reporte:</label>
+                        <textarea class="form-control" id="reason" rows="3" placeholder="Escribe la razón del reporte"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="submitReportBtn" class="btn btn-danger" onclick="sendReport()">Enviar Reporte</button>
+                </div>
             </div>
-            <form class="message-form">
-                <input type="text" id="message" placeholder="Escribe tu mensaje" class="message-input">
-                <button type="submit" class="send-button">Enviar</button>
-            </form>
         </div>
     </div>
+
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-header">Chats</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <select class="form-control" id="matchedUsers">
+                                    <option value="">Elige un usuario</option>
+                                    <?php foreach ($matches as $match) : ?>
+                                        <option value="<?php echo $match['id']; ?>" data-chatid="<?php echo $userModel->getChatId(($_SESSION["user_id"]), $match['id']); ?>"><?php echo $match['name']; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php foreach ($matches as $match) : ?>
+                                    <button id="reportBtn" class="btn btn-danger mt-2 reportUserBtn" data-bs-toggle="modal" data-bs-target="#reportModal" data-userid="<?php echo $match['id']; ?>" style="display: none;">Reportar Usuario</button>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content">
+                        <div id="chatContainer" class="card mt-3" style="display: none;">
+                            <div class="card-header">Chat</div>
+                            <div class="card-body">
+                                <div id="messages">
+
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <form>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="messageInput" placeholder="Escribe tu mensaje...">
+                                        <button type="submit" class="btn btn-primary">Enviar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             $(document).ready(function() {
                 var $sidebar = $('#sidebar');
@@ -391,6 +462,15 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                     $sidebar.removeClass('sidebar-expanded');
                     $content.css('margin-left', '80px');
                 });
+
+                $("#matchedUsers").change(function() {
+                    var selectedOption = $(this).children("option:selected");
+                    var userID = selectedOption.val();
+
+                    $(".reportUserBtn").hide();
+                    $(".reportUserBtn[data-userid='" + userID + "']").show();
+                });
+
             });
         </script>
 </body>
