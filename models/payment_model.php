@@ -77,6 +77,7 @@ class PaymentClass
             $error = "Error al validar el email. Pruebe de nuevo.";
             return json_encode(["success" => false, "message" => $error]);
         }
+        $this->closeConnection();
     }
 
     // Método para validar un pago utilizando una tarjeta de crédito
@@ -161,6 +162,7 @@ class PaymentClass
         }
 
         return json_encode(["success" => true, "message" => "Validación correcta."]);
+        $this->closeConnection();
     }
 
     // Método para cerrar la conexión a la base de datos

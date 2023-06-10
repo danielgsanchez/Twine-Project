@@ -10,15 +10,15 @@ if (empty($_SESSION["email"])) {
 require_once(__DIR__ . '/../models/user_model.php');
 
 
-$uM = new UserModel($conn);
+$userModel = new UserModel($conn);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $msg = "";
-    $nombre = $uM->sanitizeInput($_POST['first_name']);
-    $apellido = $uM->sanitizeInput($_POST['last_name']);
-    $nick = $uM->sanitizeInput($_POST['screen_name']);
-    $genero = $uM->sanitizeInput($_POST['gender']);
-    $descripcion = $uM->sanitizeInput($_POST['description']);
+    $nombre = $userModel->sanitizeInput($_POST['first_name']);
+    $apellido = $userModel->sanitizeInput($_POST['last_name']);
+    $nick = $userModel->sanitizeInput($_POST['screen_name']);
+    $genero = $userModel->sanitizeInput($_POST['gender']);
+    $descripcion = $userModel->sanitizeInput($_POST['description']);
     $img = "";
 
     if (isset($_FILES["profile-image"]) && $_FILES["profile-image"]["error"] === UPLOAD_ERR_OK) {
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: ../perfil.php?pfmsg=".urlencode($pfmsg));
         exit();
     } else {
-        $pfmsg = $uM->updateProfile($_SESSION["user_id"], $nombre, $apellido, $nick, $genero, $descripcion, $img);
+        $pfmsg = $userModel->updateProfile($_SESSION["user_id"], $nombre, $apellido, $nick, $genero, $descripcion, $img);
         header("Location: ../perfil.php?pfmsg=".urlencode($pfmsg));
         exit();
     }

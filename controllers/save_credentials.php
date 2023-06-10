@@ -9,15 +9,15 @@ if (empty($_SESSION["email"])) {
 
 require_once(__DIR__ . '/../models/user_model.php');
 
-$uM = new UserModel($conn);
-$profileInfo = $uM->getProfile($_SESSION["user_id"]);
+$userModel = new UserModel($conn);
+$profileInfo = $userModel->getProfile($_SESSION["user_id"]);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $msg = "";
-    $newEmail = $uM->sanitizeInput($_POST['email']);
-    $password = $uM->sanitizeInput($_POST['password']);
-    $newPassword = $uM->sanitizeInput($_POST['new-password']);
-    $confPassword = $uM->sanitizeInput($_POST['conf-password']);
+    $newEmail = $userModel->sanitizeInput($_POST['email']);
+    $password = $userModel->sanitizeInput($_POST['password']);
+    $newPassword = $userModel->sanitizeInput($_POST['new-password']);
+    $confPassword = $userModel->sanitizeInput($_POST['conf-password']);
 
     if (empty($password)){
         $msg .= "El campo contraseña actual no puede estar vacío.";
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: ../perfil.php?msg=".urlencode($msg));
                 exit();
             } else {
-                $pwdUpd = $uM->updatePassword($_SESSION["user_id"], $newPassword);
+                $pwdUpd = $userModel->updatePassword($_SESSION["user_id"], $newPassword);
                 if ($pwdUpd == 1) {
                     $msg .= "Contraseña cambiada con éxito.";
                     header("Location: ../perfil.php?msg=".urlencode($msg));
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
     if ($newEmail != $profileInfo["email"]){
-        $emailUpd = $uM->updateEmail($_SESSION["user_id"], $newEmail);
+        $emailUpd = $userModel->updateEmail($_SESSION["user_id"], $newEmail);
         if ($emailUpd == 1){
             $msg .= "Correo cambiado con éxito.";
             header("Location: ../perfil.php?msg=".urlencode($msg));

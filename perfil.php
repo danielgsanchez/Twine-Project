@@ -10,7 +10,7 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
-require_once "models/conn.php";
+require_once "config/config.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);
@@ -24,6 +24,34 @@ if (isset($_REQUEST['msg'])) {
 if (isset($_REQUEST['pfmsg'])) {
     $pfmsg = $_REQUEST['pfmsg'];
 }
+
+function getGenders()
+{
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+    if ($conn->connect_error) {
+        die("Error de conexión a la base de datos: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT * FROM twn_genders";
+    $result = $conn->query($sql);
+
+    if ($result === false) {
+        die("Error al ejecutar la consulta: " . $conn->error);
+    }
+
+    $genders = array();
+
+    while ($row = $result->fetch_assoc()) {
+        $genders[$row['id']] = $row;
+    }
+
+    $conn->close();
+
+    return $genders;
+}
+
+$genders = getGenders();
 
 ?>
 
@@ -156,8 +184,8 @@ if (isset($_REQUEST['pfmsg'])) {
             max-width: 256px;
         }
 
-        .error-text{
-            color:red;
+        .error-text {
+            color: red;
         }
 
         @media (max-width: 768px) {
@@ -272,8 +300,11 @@ if (isset($_REQUEST['pfmsg'])) {
                     <div class="mb-3">
                         <label for="gender" class="form-label">Género:</label>
                         <select name="gender" id="gender" class="form-control" required>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
+                            <?php foreach ($genders as $id => $gender) : ?>
+                                <option value="<?php echo $id; ?>" <?php echo ($id == $profileData[0]['gender_id']) ? 'selected' : ''; ?>>
+                                    <?php echo $gender['name']; ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                         <small id="gender-error" class="error-text"></small>
                     </div>
@@ -283,7 +314,7 @@ if (isset($_REQUEST['pfmsg'])) {
                     </div>
                     <?php
                     if (!empty($pfmsg)) {
-                        echo "<p style='color:red;'>".$pfmsg."</p>";
+                        echo "<p style='color:red;'>" . $pfmsg . "</p>";
                     }
                     ?>
                     <div class="mb-3">
@@ -300,7 +331,7 @@ if (isset($_REQUEST['pfmsg'])) {
                         <input type="email" id="email" name="email" class="form-control" value="<?php echo $profileData[0]["email"] ?>" required>
                         <small id="email-error" class="error-text"></small>
                     </div>
-                    <hr/>
+                    <hr />
                     <div class="mb-3">
                         <h6>Cambiar contraseña:</h6>
                         <label for="new-password" class="form-label">Nueva contraseña:</label>
@@ -312,7 +343,7 @@ if (isset($_REQUEST['pfmsg'])) {
                         <input type="password" id="conf-password" name="conf-password" class="form-control" required>
                         <small id="conf-password-error" class="error-text"></small>
                     </div>
-                    <hr/>
+                    <hr />
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña actual:</label>
                         <input type="password" id="password" name="password" class="form-control" required>
@@ -320,7 +351,7 @@ if (isset($_REQUEST['pfmsg'])) {
                     </div>
                     <?php
                     if (!empty($msg)) {
-                        echo "<p style='color:red;'>".$msg."</p>";
+                        echo "<p style='color:red;'>" . $msg . "</p>";
                     }
                     ?>
                     <div class="mb-3">
