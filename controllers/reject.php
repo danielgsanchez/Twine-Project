@@ -7,14 +7,14 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
+require_once "../models/user_model.php";
+
 // Verificar si se envió una solicitud AJAX de rechazo
-if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'reject') {
+if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'reject') {
     // Obtener el ID del perfil desde la solicitud
     $profileId = $_REQUEST['profile_id'];
 
     // Llamar a la función addReject del modelo de usuario
-    require_once __DIR__ . "/../models/user_model.php";
-
     $userModel = new UserModel($conn);
     $userModel->addReject($_SESSION['user_id'], $profileId);
 

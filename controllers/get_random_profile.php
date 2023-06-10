@@ -2,10 +2,10 @@
 
 session_start();
 
-require_once "../models/conn.php";
 require_once "../models/user_model.php";
 
 $userModel = new UserModel($conn);
+
 // Obtener un perfil aleatorio
 $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
@@ -16,7 +16,9 @@ if ($randomProfile) {
         'id' => $randomProfile['id'],
         'link' => $randomProfile['link'],
         'first_name' => $randomProfile['first_name'],
+        'last_name' => $randomProfile['last_name'],
         'gender_id' => $randomProfile['gender_id'],
+        'gender_name' => $randomProfile['gender_name'],
         'description' => $randomProfile['description']
     );
 

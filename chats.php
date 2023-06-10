@@ -61,7 +61,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
 
         // Función para enviar un mensaje
         function sendMessage(matchUserID) {
-            var message = $("#message").val();
+            var message = $("#messageInput").val();
             var selectedChatID = $("#matchedUsers option:selected").data("chatid");
 
             $.ajax({
@@ -75,7 +75,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                 success: function(data) {
                     if (data === "message_sent") {
                         // Limpiar el campo de entrada después de enviar el mensaje
-                        $("#message").val("");
+                        $("#messageInput").val("");
                         // Actualizar los mensajes mostrados
                         getMessages(matchUserID);
                     } else {
@@ -114,6 +114,31 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             });
         }
 
+        //Función para obtener el perfil
+        function getProfile(selectedUserID) {
+            $.ajax({
+                url: "controllers/get_profile.php",
+                method: "GET",
+                data: {
+                    userID: selectedUserID
+                },
+                success: function(profile) {
+                    // Actualizar el div con la foto de perfil y el nombre completo
+                    var profileData = JSON.parse(profile); // Convertir la respuesta JSON a objeto
+                    var profile = profileData[0];
+                    console.log(profile);
+                    if (profile && profile.first_name) {
+                        $("#userProfileImage").html("<img src='" + profile.link + "'>");
+                        $("#userProfileName").html("<strong>" + profile.first_name + " " + profile.last_name + "</strong>");
+                        $("#userProfileContainer").show();
+                    } else {
+                        $("#userProfileContainer").hide();
+                    }
+
+                }
+            });
+        }
+
         $(document).ready(function() {
             // Actualizar los mensajes y los usuarios con match cada cierto intervalo
             setInterval(function() {
@@ -132,6 +157,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                 // Obtener el ID del usuario seleccionado
                 selectedUserID = $(this).val();
                 selectedChatID = $(this).find("option:selected").data("chatid");
+                getProfile(selectedUserID);
 
                 // Mostrar el div de chat
                 $("#chatContainer").show();
@@ -249,10 +275,6 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             }
         }
 
-        #chatContainer {
-            display: none;
-        }
-
         /* Estilos para la sección de chats */
         .chats-section {
             margin-top: 40px;
@@ -270,12 +292,19 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             margin-bottom: 20px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            border-color: #007bff;
         }
 
         /* Estilos para el contenedor de chat */
         .chat-container {
             display: none;
             margin-top: 40px;
+            width: 500px;
+            height: 400px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .chat-container h2 {
@@ -299,19 +328,10 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             border-radius: 5px;
         }
 
-        .messages .message.sent {
-            background-color: #d6efff;
-            text-align: right;
-        }
-
-        .messages .message.received {
-            background-color: #e2fcd7;
-            text-align: left;
-        }
-
         .chat-form {
             display: flex;
             align-items: center;
+            margin-top: 20px;
         }
 
         .chat-form input[type="text"] {
@@ -330,6 +350,23 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #userProfileContainer {
+            display: flex;
+            align-items: center;
+            margin-top: 3px;
+        }
+
+        #userProfileImage img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        #userProfileName {
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -378,7 +415,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectar</span>
+                    <span class="text">Salir</span>
                 </a>
             </li>
         </ul>
@@ -413,39 +450,44 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                         <div class="card-header">Chats</div>
                         <div class="card-body">
                             <div class="form-group">
-                                <select class="form-control" id="matchedUsers">
+                                <select class="form-control custom-select matched-users-select" id="matchedUsers">
                                     <option value="">Elige un usuario</option>
                                     <?php foreach ($matches as $match) : ?>
                                         <option value="<?php echo $match['id']; ?>" data-chatid="<?php echo $userModel->getChatId(($_SESSION["user_id"]), $match['id']); ?>"><?php echo $match['name']; ?></option>
                                     <?php endforeach; ?>
                                 </select>
-                                <?php foreach ($matches as $match) : ?>
-                                    <button id="reportBtn" class="btn btn-danger mt-2 reportUserBtn" data-bs-toggle="modal" data-bs-target="#reportModal" data-userid="<?php echo $match['id']; ?>" style="display: none;">Reportar Usuario</button>
-                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
 
-                    <div class="content">
-                        <div id="chatContainer" class="card mt-3" style="display: none;">
-                            <div class="card-header">Chat</div>
-                            <div class="card-body">
-                                <div id="messages">
-
+                    <div id="chatContainer" class="card mt-3" style="display: none;">
+                        <div class="card-header">
+                            <div id="userProfileContainer" class="mt-3" style="display: none;">
+                                <div id="userProfileImage"></div>
+                                <div id="userProfileName"></div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="messages">
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <form>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="messageInput" placeholder="Escribe tu mensaje...">
+                                    <button type="submit" class="btn btn-primary">Enviar</button>
                                 </div>
-                            </div>
-                            <div class="card-footer">
-                                <form>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="messageInput" placeholder="Escribe tu mensaje...">
-                                        <button type="submit" class="btn btn-primary">Enviar</button>
-                                    </div>
-                                </form>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div>
+            <?php foreach ($matches as $match) : ?>
+                <button id="reportBtn" class="btn btn-danger mt-2 reportUserBtn" data-bs-toggle="modal" data-bs-target="#reportModal" data-userid="<?php echo $match['id']; ?>" style="display: none;">Reportar Usuario</button>
+            <?php endforeach; ?>
         </div>
 
         <script>

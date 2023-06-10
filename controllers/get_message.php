@@ -7,10 +7,14 @@ if (empty($_SESSION["email"])) {
 }
 
 require_once "../models/conn.php";
+require_once "../models/user_model.php";
+$userModel = new UserModel($conn);
+
 $userId = $_SESSION["user_id"];
 // Verificar si el índice "matchUserID" existe en $_GET
 if (isset($_GET["matchUserID"])) {
     $matchUserID = $_GET["matchUserID"];
+    $matchUserProfile = $userModel->getFullProfile($matchUserID);
 
     // Obtener los mensajes del chat de la base de datos
     $messages = getChatMessages($conn, $userId, $matchUserID);

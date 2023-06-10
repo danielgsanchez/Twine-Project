@@ -9,9 +9,13 @@ function loadRandomProfile() {
       if (response.success) {
         var profile = response.profile;
         $(".card-img-top").attr("src", profile.link);
-        $(".card-title").text(profile.first_name);
-        $(".card-text.gender").text(profile.gender_id);
-        $(".card-text.description").text(profile.description);
+        $("#name").text(profile.first_name + " " + profile.last_name);
+        $("#gender").text(profile.gender_name);
+        $("#description").text(profile.description);
+
+        // Actualizar las ID de los botones
+        $(".btn.btn-primary").attr("data-profile-id", profile.id);
+        $(".btn.btn-danger").attr("data-profile-id", profile.id);
       } else {
         // Mostrar un mensaje de error si no se encontró ningún perfil
         $(".card").html("<p>No se encontraron perfiles disponibles.</p>");
@@ -26,6 +30,7 @@ function loadRandomProfile() {
 
 // Función para manejar la acción de coincidencia con AJAX
 function matchProfile(profileId) {
+  var profileId = $("#mBtn").attr("data-profile-id");
   $.ajax({
     url: "controllers/match.php",
     type: "POST",
@@ -84,6 +89,7 @@ function matchProfile(profileId) {
 
 // Función para manejar la acción de rechazar con AJAX
 function rejectProfile(profileId) {
+  var profileId = $("#rBtn").attr("data-profile-id");
   $.ajax({
     url: "controllers/reject.php",
     type: "POST",
@@ -104,7 +110,7 @@ function rejectProfile(profileId) {
           tapToDismiss: false,
           onclick: null,
           closeHtml: '<button><i class="fa fa-times"></i></button>',
-          progressBarColor: "#00cc66", // Color verde
+          progressBarColor: "#00cc66",
           toastClass: "toast success reject",
           toastId: "success-toast",
         });

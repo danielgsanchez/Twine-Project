@@ -169,7 +169,7 @@ $tickets = $adminModel->getUserTickets();
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectar</span>
+                    <span class="text">Salir</span>
                 </a>
             </li>
         </ul>

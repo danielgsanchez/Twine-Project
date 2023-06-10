@@ -229,9 +229,10 @@ class UserModel
         $rejectedProfiles = $this->getRejectedProfiles($userId);
 
         // Consulta SQL para seleccionar un perfil aleatorio que no haya sido rechazado o bloqueado
-        $query = "SELECT u.id, u.first_name, u.gender_id, u.description, p.link
+        $query = "SELECT u.*, p.link, g.name AS gender_name
         FROM twn_users u
-        INNER JOIN twn_user_photo p ON u.id = p.user_id
+        JOIN twn_user_photo p ON u.id = p.user_id
+        JOIN twn_genders g ON u.gender_id = g.id
         WHERE u.id != $userId
           AND u.id NOT IN (
               SELECT user2_id FROM twn_matches WHERE user1_id = $userId
@@ -259,7 +260,10 @@ class UserModel
                 return [
                     'id' => $row['id'],
                     'first_name' => $row['first_name'],
+                    'last_name' => $row['last_name'],
+                    'nick' => $row['screen_name'],
                     'gender_id' => $row['gender_id'],
+                    'gender_name' => $row['gender_name'],
                     'description' => $row['description'],
                     'link' => $row['link']
                 ];
@@ -536,7 +540,7 @@ class UserModel
         $stmt->bind_param("iiii", $userId, $user2Id, $user2Id, $userId);
         $stmt->execute();
         $result = $stmt->get_result();
-    
+
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             return $row["id"];

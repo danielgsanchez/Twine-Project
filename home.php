@@ -181,13 +181,13 @@ $goldSub = $userModel->getGold($_SESSION["user_id"]);
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>
-                    <span class="text">Home</span>
+                    <span class="text">Principal</span>
                 </a>
             </li>
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectar</span>
+                    <span class="text">Salir</span>
                 </a>
             </li>
         </ul>

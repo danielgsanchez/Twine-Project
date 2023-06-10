@@ -126,7 +126,6 @@ if (isset($_REQUEST['pfmsg'])) {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .form-group textarea {
@@ -142,7 +141,6 @@ if (isset($_REQUEST['pfmsg'])) {
             justify-content: center;
             align-items: flex-start;
             padding: 20px;
-            margin-top: 60px;
         }
 
         .card {
@@ -151,7 +149,6 @@ if (isset($_REQUEST['pfmsg'])) {
             padding: 20px;
             max-width: 600px;
             margin-right: 20px;
-            margin-top: 20px;
         }
 
         .profile-image {

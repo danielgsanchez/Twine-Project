@@ -121,7 +121,6 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .home-card {
@@ -134,11 +133,9 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
         .card {
             margin-bottom: 20px;
-            margin-top: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-height: 100vh;
             max-width: 600px;
         }
 
@@ -146,7 +143,6 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%;
         }
 
         .card-title {
@@ -166,13 +162,12 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .card-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         @media (max-width: 768px) {
@@ -237,37 +232,41 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>
-                    <span class="text">Home</span>
+                    <span class="text">Principal</span>
                 </a>
             </li>
             <li>
                 <a href="logout.php">
                     <span class="icon"><i class="fas fa-power-off"></i></span>
-                    <span class="text">Desconectar</span>
+                    <span class="text">Salir</span>
                 </a>
             </li>
         </ul>
     </div>
 
     <div class="content">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 card-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card-deck">
                     <?php if ($randomProfile) : ?>
                         <div class="card">
                             <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
                             <div class="card-body">
-                                <h5 class="card-title"><strong>Nombre: </strong><?php echo $randomProfile['first_name']; ?></h5>
-                                <p class="card-text"><strong>Género: </strong> <?php echo $randomProfile['gender_id']; ?></p>
+                                <h5 class="card-title">
+                                    <strong><p id="pfname"><?php echo $randomProfile['first_name'] . " " . $randomProfile['last_name']; ?></p></strong>
+                                </h5>
+                                <strong>Género: </strong>
+                                <p id="gender"><?php echo $randomProfile['gender_name']; ?></p>
                                 <div class="form-group card-description">
                                     <strong>Descripción:</strong><br />
-                                    <p class="card-text"><?php echo $randomProfile['description']; ?></p>
+                                    <p id="description"> <?php echo $randomProfile['description']; ?></p>
                                 </div>
                                 <div class="card-buttons">
-                                    <button onclick="matchProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-primary">
+                                    <button id="mBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="matchProfile(this)" class="btn btn-primary">
                                         <i class="fas fa-heart"></i> ¡Enlázate!
                                     </button>
-                                    <button onclick="rejectProfile('<?php echo $randomProfile['id']; ?>')" class="btn btn-danger">
+                                    <button id="rBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="rejectProfile(this)" class="btn btn-danger">
                                         <i class="fas fa-ban"></i> Pasar
                                     </button>
                                 </div>
@@ -280,6 +279,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
             </div>
         </div>
     </div>
+</div>
 
     <script>
         $(document).ready(function() {
