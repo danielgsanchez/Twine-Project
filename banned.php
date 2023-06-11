@@ -113,11 +113,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
+
     <div class="ban-container">
         <i class="fas fa-ban ban-icon"></i>
         <p class="ban-message">Tu cuenta ha sido suspendida debido a violaciones de las normas del sitio.
             Si crees que ha sido un error, <a href="#" id="contact-link">ponte en contacto con nosotros</a>.
         </p>
+        <div class="text-center">
+            <a href="logout.php" class="btn btn-primary">Cerrar sesión</a>
+        </div>
     </div>
 
     <!-- Modal -->

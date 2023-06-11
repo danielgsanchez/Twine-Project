@@ -12,6 +12,7 @@ if (empty($_SESSION["email"])) {
 
 require_once "models/conn.php";
 require_once "models/admin_model.php";
+require_once "models/user_model.php";
 
 $adminModel = new AdminModel($conn);
 $tickets = $adminModel->getUserTickets();
@@ -121,7 +122,7 @@ $tickets = $adminModel->getUserTickets();
             border-radius: 5px;
             padding: 20px;
             text-align: center;
-            max-width: 400px;
+            max-width: fit-content;
         }
 
         @media (max-width: 768px) {
@@ -180,7 +181,7 @@ $tickets = $adminModel->getUserTickets();
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th># Ticket</th>
                         <th>Usuario 1</th>
                         <th>Usuario 2</th>
                         <th>Razón</th>
@@ -196,6 +197,11 @@ $tickets = $adminModel->getUserTickets();
                             <td>
                                 <button class="delete-ticket btn btn-primary" data-ticket-id="<?php echo $ticket['id']; ?>">
                                     <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="ban-user btn btn-danger" data-user-id="<?php echo $ticket['user2_id']; ?>">
+                                    <i class="fas fa-ban"></i>
                                 </button>
                             </td>
                         </tr>
@@ -221,7 +227,7 @@ $tickets = $adminModel->getUserTickets();
 
             $(".delete-ticket").click(function() {
                 var ticketId = $(this).data("ticket-id");
-                var $button = $(this);
+                var button = $(this);
 
                 // Realizar la llamada AJAX para eliminar el ticket
                 $.ajax({
@@ -234,13 +240,63 @@ $tickets = $adminModel->getUserTickets();
                         if (response == "success") {
                             // Actualizar la interfaz para mostrar el popup y eliminar la fila
                             alert("Ticket borrado");
-                            $button.closest("tr").remove();
+                            button.closest("tr").remove();
                         } else {
                             alert("Error al borrar el ticket");
                         }
                     }
                 });
             })
+
+            $(document).on("click", ".ban-user", function() {
+                var userId = $(this).data("user-id");
+                var button = $(this);
+                $.ajax({
+                    url: 'controllers/admin_actions.php',
+                    type: 'POST',
+                    data: {
+                        action: 'ban',
+                        userId: userId
+                    },
+                    success: function(response) {
+                        if (response.includes('success')) {
+                            alert('Usuario baneado');
+                            var newButton = $('<button class="unban-user btn btn-success" data-user-id="' + userId + '"> <i class="fa fa-user-plus"></i> </button>');
+                            button.replaceWith(newButton);
+                        } else {
+                            alert('Ha ocurrido un error al banear al usuario');
+                        }
+                    },
+                    error: function() {
+                        alert('Ha ocurrido un error en la solicitud');
+                    }
+                });
+            });
+
+            $(document).on("click", ".unban-user", function() {
+                var userId = $(this).data("user-id");
+                var button = $(this);
+                $.ajax({
+                    url: 'controllers/admin_actions.php',
+                    type: 'POST',
+                    data: {
+                        action: 'unban',
+                        userId: userId
+                    },
+                    success: function(response) {
+                        if (response.includes('success')) {
+                            alert('Usuario desbaneado');
+                            var newButton = $('<button class="ban-user btn btn-danger" data-user-id="' + userId + '"> <i class="fas fa-ban"></i> </button>');
+                            button.replaceWith(newButton);
+                        } else {
+                            alert('Ha ocurrido un error al desbanear al usuario');
+                        }
+                    },
+                    error: function() {
+                        alert('Ha ocurrido un error en la solicitud');
+                    }
+                });
+            });
         });
     </script>
 </body>

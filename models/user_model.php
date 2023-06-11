@@ -228,18 +228,23 @@ class UserModel
         // Obtener los perfiles rechazados o bloqueados por el usuario
         $rejectedProfiles = $this->getRejectedProfiles($userId);
 
+        // Obtener los hobbies del usuario logeado
+        $userHobbies = $this->getUserHobbies($userId);
+
+
         // Consulta SQL para seleccionar un perfil aleatorio que no haya sido rechazado o bloqueado
         $query = "SELECT u.*, p.link, g.name AS gender_name
         FROM twn_users u
         JOIN twn_user_photo p ON u.id = p.user_id
         JOIN twn_genders g ON u.gender_id = g.id
         WHERE u.id != $userId
-          AND u.id NOT IN (
-              SELECT user2_id FROM twn_matches WHERE user1_id = $userId
-              UNION
-              SELECT user1_id FROM twn_matches WHERE user2_id = $userId
-          )
-        ORDER BY RAND()
+            AND u.id NOT IN (
+                SELECT user2_id FROM twn_matches WHERE user1_id = $userId
+                UNION
+                SELECT user1_id FROM twn_matches WHERE user2_id = $userId
+            )
+            AND u.gender_id = (SELECT gender_id FROM twn_interested_in WHERE user_id = $userId)
+        ORDER BY CASE WHEN FIND_IN_SET('$userHobbies', u.hobbies) > 0 THEN 0 ELSE 1 END, RAND()
         LIMIT 1";
 
         // Ejecutar la consulta SQL y obtener el resultado
@@ -265,6 +270,7 @@ class UserModel
                     'gender_id' => $row['gender_id'],
                     'gender_name' => $row['gender_name'],
                     'description' => $row['description'],
+                    'hobbies' => $row['hobbies'],
                     'link' => $row['link']
                 ];
             }
@@ -273,6 +279,27 @@ class UserModel
         }
 
         $this->closeConnection();
+    }
+
+    private function getUserHobbies($userId)
+    {
+        // Consulta SQL para obtener los hobbies del usuario logeado
+        $query = "SELECT hobbies FROM twn_users WHERE id = $userId";
+
+        // Ejecutar la consulta SQL y obtener el resultado
+        $result = mysqli_query($this->conn, $query);
+
+        // Verificar si se obtuvo un resultado
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Obtener los hobbies del usuario
+            $row = mysqli_fetch_assoc($result);
+            $hobbies = $row['hobbies'];
+
+            // Devolver los hobbies
+            return $hobbies;
+        } else {
+            return '';
+        }
     }
 
     // Función para agregar o actualizar un registro de coincidencia en la base de datos

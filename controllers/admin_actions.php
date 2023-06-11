@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userId = $_POST['userId'];
 
             $adminModel = new AdminModel($conn);
-            $success = $adminModel->unbanUser($userId); // Banear al usuario
+            $success = $adminModel->unbanUser($userId); // Desbanear al usuario
 
             if ($success) {
                 echo json_encode('success');

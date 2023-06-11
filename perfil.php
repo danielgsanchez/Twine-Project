@@ -312,6 +312,10 @@ $genders = getGenders();
                         <label for="description" class="form-label">Descripción:</label>
                         <textarea id="description" name="description" class="form-control" rows="4"><?php echo $profileData[0]["description"] ?></textarea>
                     </div>
+                    <div class="mb-3">
+                        <label for="hobbies" class="form-label">Hobbies:</label>
+                        <textarea id="hobbies" name="hobbies" class="form-control" rows="4"><?php echo $profileData[0]["hobbies"] ?></textarea>
+                    </div>
                     <?php
                     if (!empty($pfmsg)) {
                         echo "<p style='color:red;'>" . $pfmsg . "</p>";

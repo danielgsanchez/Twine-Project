@@ -12,6 +12,7 @@ function loadRandomProfile() {
         $("#name").text(profile.first_name + " " + profile.last_name);
         $("#gender").text(profile.gender_name);
         $("#description").text(profile.description);
+        $("#hobbies").text(profile.hobbies);
 
         // Actualizar las ID de los botones
         $(".btn.btn-primary").attr("data-profile-id", profile.id);

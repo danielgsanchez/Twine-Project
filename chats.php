@@ -372,7 +372,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg">
@@ -409,7 +409,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>
-                    <span class="text">Home</span>
+                    <span class="text">Principal</span>
                 </a>
             </li>
             <li>

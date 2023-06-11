@@ -195,7 +195,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+<div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg">
@@ -261,6 +261,10 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
                                 <div class="form-group card-description">
                                     <strong>Descripción:</strong><br />
                                     <p id="description"> <?php echo $randomProfile['description']; ?></p>
+                                </div>
+                                <div class="form-group card-description">
+                                    <strong>Hobbies:</strong><br />
+                                    <p id="hobbies"> <?php echo $randomProfile['hobbies']; ?></p>
                                 </div>
                                 <div class="card-buttons">
                                     <button id="mBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="matchProfile(this)" class="btn btn-primary">
