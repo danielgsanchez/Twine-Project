@@ -305,7 +305,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <label for="paypalEmail">Email de PayPal</label>
                                             <input type="email" class="form-control" id="paypalEmail" name="paypalEmail" placeholder="Introduce tu email de PayPal">
                                             <small class="form-text text-danger"></small>
-                                        </div><br/>
+                                        </div><br />
                                     </div>
                                     <div class="form-group">
                                         <div class="form-check">
@@ -321,14 +321,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 </label>
                                                 <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="Introduce el número de tarjeta">
                                                 <small class="form-text text-danger"></small>
-                                            </div><br/>
+                                            </div><br />
                                             <div class="form-group">
                                                 <label for="cardName">
                                                     <i class="far fa-user"></i> Propietario de la tarjeta
                                                 </label>
                                                 <input type="text" class="form-control" id="cardName" name="cardName" placeholder="Introduce el nombre del titular de la tarjeta">
                                                 <small class="form-text text-danger"></small>
-                                            </div><br/>
+                                            </div><br />
                                             <div class="form-row">
                                                 <div class="col">
                                                     <label for="cardExpiry">
@@ -336,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </label>
                                                     <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" placeholder="MM/YY">
                                                     <small class="form-text text-danger"></small>
-                                                </div><br/>
+                                                </div><br />
                                                 <div class="col">
                                                     <label for="cardCVC">
                                                         <i class="fas fa-lock"></i> CVC/CVV
@@ -362,7 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <p>Precio final: 18.75 €</p>
                                     </div>
                                 </div>
-                            </div><br/>
+                            </div><br />
                             <button type="submit" id="payButton" name="payButton" class="btn btn-primary">Realizar pago</button>
                         </form>
                     </div>

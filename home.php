@@ -10,7 +10,6 @@ if (empty($_SESSION["email"])) {
     exit;
 }
 
-require_once "models/conn.php";
 require_once "models/user_model.php";
 
 $userModel = new UserModel($conn);

@@ -7,12 +7,11 @@ if (!empty($_SESSION["email"])) {
   exit;
 }
 
-if ((!empty($_SESSION["email"])) && ($_SESSION["email"] == "admin@admin.es")){
+if ((!empty($_SESSION["email"])) && ($_SESSION["email"] == "admin@admin.es")) {
   header("Location: admin_page.php");
   exit;
 }
 
-require_once 'models/conn.php';
 require_once 'models/user_model.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

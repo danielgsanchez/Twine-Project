@@ -250,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ?>
             </div>
         </div>
-    </nav><br/><br/>
+    </nav><br /><br />
     <!-- /NAVBAR -->
     <div class="container">
         <div class="registration-form">

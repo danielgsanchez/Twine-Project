@@ -36,7 +36,7 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
 
     $conn->close();
   }
-  ?>
+?>
   <!DOCTYPE html>
   <html lang="es">
 

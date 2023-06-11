@@ -178,7 +178,7 @@ $goldCount = $adminModel->getGoldUsers();
     </div>
     <div class="content">
         <div class="home-card">
-            <h2>Estadísticas</h2><br/>
+            <h2>Estadísticas</h2><br />
             <p>Número de usuarios registrados: <?php echo $userCount; ?></p>
             <p>Número de usuarios con suscripción Gold: <?php echo $goldCount; ?></p>
         </div>

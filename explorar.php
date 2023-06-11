@@ -195,7 +195,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 </head>
 
 <body>
-<div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="home.php">
                 <img src="images/logo_vf.svg">
@@ -245,45 +245,47 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
     </div>
 
     <div class="content">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card-deck">
-                    <?php if ($randomProfile) : ?>
-                        <div class="card">
-                            <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <strong><p id="pfname"><?php echo $randomProfile['first_name'] . " " . $randomProfile['last_name']; ?></p></strong>
-                                </h5>
-                                <strong>Género: </strong>
-                                <p id="gender"><?php echo $randomProfile['gender_name']; ?></p>
-                                <div class="form-group card-description">
-                                    <strong>Descripción:</strong><br />
-                                    <p id="description"> <?php echo $randomProfile['description']; ?></p>
-                                </div>
-                                <div class="form-group card-description">
-                                    <strong>Hobbies:</strong><br />
-                                    <p id="hobbies"> <?php echo $randomProfile['hobbies']; ?></p>
-                                </div>
-                                <div class="card-buttons">
-                                    <button id="mBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="matchProfile(this)" class="btn btn-primary">
-                                        <i class="fas fa-heart"></i> ¡Enlázate!
-                                    </button>
-                                    <button id="rBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="rejectProfile(this)" class="btn btn-danger">
-                                        <i class="fas fa-ban"></i> Pasar
-                                    </button>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card-deck">
+                        <?php if ($randomProfile) : ?>
+                            <div class="card">
+                                <img src="<?php echo $randomProfile['link']; ?>" class="card-img-top" alt="Foto de perfil">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <strong>
+                                            <p id="pfname"><?php echo $randomProfile['first_name'] . " " . $randomProfile['last_name']; ?></p>
+                                        </strong>
+                                    </h5>
+                                    <strong>Género: </strong>
+                                    <p id="gender"><?php echo $randomProfile['gender_name']; ?></p>
+                                    <div class="form-group card-description">
+                                        <strong>Descripción:</strong><br />
+                                        <p id="description"> <?php echo $randomProfile['description']; ?></p>
+                                    </div>
+                                    <div class="form-group card-description">
+                                        <strong>Hobbies:</strong><br />
+                                        <p id="hobbies"> <?php echo $randomProfile['hobbies']; ?></p>
+                                    </div>
+                                    <div class="card-buttons">
+                                        <button id="mBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="matchProfile(this)" class="btn btn-primary">
+                                            <i class="fas fa-heart"></i> ¡Enlázate!
+                                        </button>
+                                        <button id="rBtn" data-profile-id="<?php echo $randomProfile['id']; ?>" onclick="rejectProfile(this)" class="btn btn-danger">
+                                            <i class="fas fa-ban"></i> Pasar
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php else : ?>
-                        <p>No se encontraron perfiles disponibles.</p>
-                    <?php endif; ?>
+                        <?php else : ?>
+                            <p>No se encontraron perfiles disponibles.</p>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <script>
         $(document).ready(function() {
