@@ -349,10 +349,12 @@ class UserModel
         $this->closeConnection();
     }
 
-    function updateProfile($id, $nombre, $apellido, $nick, $genero, $descripcion, $img)
+    function updateProfile($id, $nombre, $apellido, $nick, $genero, $descripcion, $img, $interested_in, $hobbies)
     {
         $msg = "";
-        if (!empty($img)) {
+        $rutaImagenAnterior = $this->getImagePath($id);
+
+        if (!empty($img) || empty($rutaImagenAnterior)) {
             // Preparar la consulta SQL para actualizar la ruta de la imagen en la tabla twn_user_photo
             $sqlUpdatePhoto = "UPDATE twn_user_photo SET link = ? WHERE user_id = ?";
 
@@ -365,59 +367,141 @@ class UserModel
             // Ejecutar la consulta para actualizar la ruta de la imagen
             $stmtUpdatePhoto->execute();
 
-            // Verificar si la actualización de la ruta de la imagen fue exitosa
+            // Verificar si se realizó alguna actualización en la imagen
             if ($stmtUpdatePhoto->affected_rows > 0) {
                 $msg = "Actualización de imagen exitosa. ";
-            } else {
-                $msg = "Error en la actualización de la imagen. ";
             }
+
+            $stmtUpdatePhoto->close();
         }
 
         if (empty($descripcion)) {
             // Preparar la consulta SQL con marcadores de posición
-            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, screen_name = ? WHERE id = ?";
+            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, screen_name = ?, hobbies = ? WHERE id = ?";
 
             // Preparar la declaración
             $stmt = $this->conn->prepare($sql);
 
             // Vincular los parámetros
-            $stmt->bind_param("ssssi", $nombre, $apellido, $genero, $nick, $id);
+            $stmt->bind_param("sssssi", $nombre, $apellido, $genero, $nick, $hobbies, $id);
 
             // Ejecutar la consulta
             $stmt->execute();
 
             // Verificar si la actualización fue exitosa
             if ($stmt->affected_rows > 0) {
-                $msg = "Actualización exitosa";
-                return $msg;
-            } else {
-                $msg = "Error en la actualización";
-                return $msg;
+                $msg .= "Actualización exitosa. ";
             }
+
+            $stmt->close();
         } else {
             // Preparar la consulta SQL con marcadores de posición
-            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, description = ?, screen_name = ?  WHERE id = ?";
+            $sql = "UPDATE twn_users SET first_name = ?, last_name = ?, gender_id = ?, description = ?, screen_name = ?, hobbies = ? WHERE id = ?";
 
             // Preparar la declaración
             $stmt = $this->conn->prepare($sql);
 
             // Vincular los parámetros
-            $stmt->bind_param("sssssi", $nombre, $apellido, $genero, $descripcion, $nick, $id);
+            $stmt->bind_param("ssssssi", $nombre, $apellido, $genero, $descripcion, $nick, $hobbies, $id);
 
             // Ejecutar la consulta
             $stmt->execute();
 
             // Verificar si la actualización fue exitosa
             if ($stmt->affected_rows > 0) {
-                $msg = "Actualización exitosa";
-                return $msg;
-            } else {
-                $msg = "Error en la actualización";
-                return $msg;
+                $msg .= "Actualización exitosa. ";
             }
+
+            $stmt->close();
         }
 
-        $this->closeConnection();
+        // Obtener el valor actual de interested_in
+        $interested_in_value = $this->getInterestedIn($id)['gender_id'];
+
+        // Verificar si los intereses necesitan actualizarse
+        if ($interested_in_value != $interested_in) {
+            // Preparar la consulta SQL para actualizar los intereses en la tabla twn_interested_in
+            $sqlUpdateInterestedIn = "UPDATE twn_interested_in SET interested_in = ? WHERE user_id = ?";
+
+            // Preparar la declaración para actualizar los intereses
+            $stmtUpdateInterestedIn = $this->conn->prepare($sqlUpdateInterestedIn);
+
+            // Vincular los parámetros para actualizar los intereses
+            $stmtUpdateInterestedIn->bind_param("si", $interested_in, $id);
+
+            // Ejecutar la consulta para actualizar los intereses
+            $stmtUpdateInterestedIn->execute();
+
+            // Verificar si la actualización de los intereses fue exitosa
+            if ($stmtUpdateInterestedIn->affected_rows > 0) {
+                $msg .= "Actualización de intereses exitosa. ";
+            }
+
+            $stmtUpdateInterestedIn->close();
+        }
+
+        // Verificar si no se realizó ninguna actualización
+        if (empty($msg)) {
+            $msg = "No se realizaron cambios en el perfil";
+        }
+
+        return $msg;
+    }
+
+
+    function getInterestedIn($userId)
+    {
+        $sql = "SELECT twn_interested_in.gender_id, twn_genders.name AS gender_name
+            FROM twn_interested_in
+            INNER JOIN twn_genders ON twn_interested_in.gender_id = twn_genders.id
+            WHERE twn_interested_in.user_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if ($result === false) {
+            die("Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        $interested_in = $result->fetch_assoc();
+
+        $stmt->close();
+
+        return $interested_in;
+    }
+
+
+    function getImagePath($id)
+    {
+        // Preparar la consulta SQL para obtener la ruta de la imagen anterior
+        $sql = "SELECT link FROM twn_user_photo WHERE user_id = ?";
+
+        // Preparar la declaración
+        $stmt = $this->conn->prepare($sql);
+
+        // Vincular el parámetro
+        $stmt->bind_param("i", $id);
+
+        // Ejecutar la consulta
+        $stmt->execute();
+
+        // Obtener el resultado de la consulta
+        $result = $stmt->get_result();
+
+        // Obtener la fila de resultado
+        $row = $result->fetch_assoc();
+
+        // Obtener la ruta de la imagen anterior
+        $rutaImagenAnterior = $row['link'];
+
+        // Cerrar la declaración y el resultado
+        $stmt->close();
+        $result->close();
+
+        // Devolver la ruta de la imagen anterior
+        return $rutaImagenAnterior;
     }
 
     function updatePassword($id, $newPassword)

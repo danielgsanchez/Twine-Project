@@ -16,6 +16,7 @@ require_once "models/user_model.php";
 $userModel = new UserModel($conn);
 $goldSub = $userModel->getGold($_SESSION["user_id"]);
 $profileData = $userModel->getFullProfile($_SESSION["user_id"]);
+$interested_in = $userModel->getInterestedIn($_SESSION["user_id"]);
 
 if (isset($_REQUEST['msg'])) {
     $msg = $_REQUEST['msg'];
@@ -52,7 +53,6 @@ function getGenders()
 }
 
 $genders = getGenders();
-
 ?>
 
 <!DOCTYPE html>
@@ -302,6 +302,17 @@ $genders = getGenders();
                         <select name="gender" id="gender" class="form-control" required>
                             <?php foreach ($genders as $id => $gender) : ?>
                                 <option value="<?php echo $id; ?>" <?php echo ($id == $profileData[0]['gender_id']) ? 'selected' : ''; ?>>
+                                    <?php echo $gender['name']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small id="gender-error" class="error-text"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="interested_in" class="form-label">Busco:</label>
+                        <select name="interested_in" id="interested_in" class="form-control" required>
+                            <?php foreach ($genders as $id => $gender) : ?>
+                                <option value="<?php echo $id; ?>" <?php echo ($id == $interested_in['gender_id']) ? 'selected' : ''; ?>>
                                     <?php echo $gender['name']; ?>
                                 </option>
                             <?php endforeach; ?>

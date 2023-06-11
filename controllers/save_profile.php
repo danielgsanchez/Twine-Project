@@ -9,7 +9,6 @@ if (empty($_SESSION["email"])) {
 
 require_once(__DIR__ . '/../models/user_model.php');
 
-
 $userModel = new UserModel($conn);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -19,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nick = $userModel->sanitizeInput($_POST['screen_name']);
     $genero = $userModel->sanitizeInput($_POST['gender']);
     $descripcion = $userModel->sanitizeInput($_POST['description']);
+    $interested_in = $userModel->sanitizeInput($_POST['interested_in']);
+    $hobbies = $userModel->sanitizeInput($_POST['hobbies']);
     $img = "";
 
     if (isset($_FILES["profile-image"]) && $_FILES["profile-image"]["error"] === UPLOAD_ERR_OK) {
@@ -28,16 +29,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Mover el archivo a una ubicación permanente
         $destination = "../chat_imgs/avatares/" . $file_name;
         move_uploaded_file($file_tmp, $destination);
-        $img = "chat_imgs\avatares\\".$file_name; // Guardar el nombre del archivo en la variable $img
+        $img = "chat_imgs\avatares\\" . $file_name; // Guardar el nombre del archivo en la variable $img
     }
 
-    if (empty($nombre) || empty($apellido) || empty($nick) || empty($genero)) {
+    if (empty($nombre) || empty($apellido) || empty($nick) || empty($genero) || empty($interested_in)) {
         $pfmsg = "Por favor, complete todos los campos obligatorios.";
-        header("Location: ../perfil.php?pfmsg=".urlencode($pfmsg));
+        header("Location: ../perfil.php?pfmsg=" . urlencode($pfmsg));
         exit();
     } else {
-        $pfmsg = $userModel->updateProfile($_SESSION["user_id"], $nombre, $apellido, $nick, $genero, $descripcion, $img);
-        header("Location: ../perfil.php?pfmsg=".urlencode($pfmsg));
+        $pfmsg = $userModel->updateProfile($_SESSION["user_id"], $nombre, $apellido, $nick, $genero, $descripcion, $img, $interested_in, $hobbies);
+        if (is_array($pfmsg)) {
+            $pfmsg = implode(" ", $pfmsg);
+        }
+
+        header("Location: ../perfil.php?pfmsg=" . urlencode($pfmsg));
         exit();
     }
 }
