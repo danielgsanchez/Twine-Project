@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-06-2023 a las 16:18:05
+-- Tiempo de generación: 12-06-2023 a las 17:10:44
 -- Versión del servidor: 10.4.25-MariaDB
 -- Versión de PHP: 8.1.10
 
@@ -359,7 +359,7 @@ CREATE TABLE `twn_users` (
 
 INSERT INTO `twn_users` (`id`, `first_name`, `last_name`, `gender_id`, `description`, `screen_name`, `email`, `gold_sub`, `password`, `is_banned`, `confirmation_code`, `hobbies`) VALUES
 (1, 'Wye', 'Skipsey', 'M', 'Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero.\r\n\r\nNullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh.\r\n\r\nIn quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.', 'wskipsey0', 'wskipsey0@uol.com.br', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Fútbol, Lectura, Cocina, Viajes'),
-(2, 'Robin', 'Gradwell', 'F', 'Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\n\nFusce consequat. Nulla nisl. Nunc nisl.\n\nDuis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum.', 'rgradwell1', 'rgradwell1@bing.com', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Pintura, Jardinería, Fotografía, Senderismo '),
+(2, 'Robin', 'Gradwell', 'M', 'Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\r\n\r\nFusce consequat. Nulla nisl. Nunc nisl.\r\n\r\nDuis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum.', 'rgradwell1', 'rgradwell1@bing.com', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Pintura, Jardinería, Fotografía, Senderismo'),
 (3, 'Janaye', 'Batho', 'F', 'Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis.\n\nFusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.\n\nSed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'jbatho2', 'jbatho2@is.gd', 1, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Bailar, Cine, Yoga, Ajedrez '),
 (4, 'Jacinta', 'Pitkeathly', 'F', 'Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi.\n\nCras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.\n\nQuisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'jpitkeathly3', 'jpitkeathly3@artisteer.com', 1, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Música, Deportes acuáticos, Videojuegos, Excursionismo '),
 (5, 'Hazel', 'Cranney', 'M', 'Curabitur gravida nisi at nibh. In hac habitasse platea dictumst. Aliquam augue quam, sollicitudin vitae, consectetuer eget, rutrum at, lorem.\n\nInteger tincidunt ante vel ipsum. Praesent blandit lacinia erat. Vestibulum sed magna at nunc commodo placerat.\n\nPraesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.', 'hcranney4', 'hcranney4@princeton.edu', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Fútbol, Lectura, Cocina, Viajes '),
@@ -420,66 +420,64 @@ CREATE TABLE `twn_user_photo` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `link` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pic1` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pic2` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `twn_user_photo`
 --
 
-INSERT INTO `twn_user_photo` (`id`, `user_id`, `link`, `description`, `pic1`, `pic2`) VALUES
-(1, 1, 'chat_imgs\\avatares\\1.jpg', '', 'chat_imgs\\user_pics\\hero1.jpg', NULL),
-(2, 2, 'chat_imgs\\avatares\\2.jpg', '', NULL, NULL),
-(3, 3, 'chat_imgs\\avatares\\3.jpg', '', NULL, NULL),
-(4, 4, 'chat_imgs\\avatares\\4.jpg', '', NULL, NULL),
-(5, 5, 'chat_imgs\\avatares\\5.jpg', '', NULL, NULL),
-(6, 6, 'chat_imgs\\avatares\\6.jpg', '', NULL, NULL),
-(7, 7, 'chat_imgs\\avatares\\7.jpg', '', NULL, NULL),
-(8, 8, 'chat_imgs\\avatares\\8.jpg', '', NULL, NULL),
-(9, 9, 'chat_imgs\\avatares\\9.jpg', '', NULL, NULL),
-(10, 10, 'chat_imgs\\avatares\\10.jpg', '', NULL, NULL),
-(11, 11, 'chat_imgs\\avatares\\11.jpg', '', NULL, NULL),
-(12, 12, 'chat_imgs\\avatares\\12.jpg', '', NULL, NULL),
-(13, 13, 'chat_imgs\\avatares\\13.jpg', '', NULL, NULL),
-(14, 14, 'chat_imgs\\avatares\\14.jpg', '', NULL, NULL),
-(15, 15, 'chat_imgs\\avatares\\15.jpg', '', NULL, NULL),
-(16, 16, 'chat_imgs\\avatares\\16.jpg', '', NULL, NULL),
-(17, 17, 'chat_imgs\\avatares\\17.jpg', '', NULL, NULL),
-(18, 18, 'chat_imgs\\avatares\\18.jpg', '', NULL, NULL),
-(19, 19, 'chat_imgs\\avatares\\19.jpg', '', NULL, NULL),
-(20, 20, 'chat_imgs\\avatares\\20.jpg', '', NULL, NULL),
-(21, 21, 'chat_imgs\\avatares\\21.jpg', '', NULL, NULL),
-(22, 22, 'chat_imgs\\avatares\\22.jpg', '', NULL, NULL),
-(23, 23, 'chat_imgs\\avatares\\23.jpg', '', NULL, NULL),
-(24, 24, 'chat_imgs\\avatares\\24.jpg', '', NULL, NULL),
-(25, 25, 'chat_imgs\\avatares\\25.jpg', '', NULL, NULL),
-(26, 26, 'chat_imgs\\avatares\\26.jpg', '', NULL, NULL),
-(27, 27, 'chat_imgs\\avatares\\27.jpg', '', NULL, NULL),
-(28, 28, 'chat_imgs\\avatares\\28.jpg', '', NULL, NULL),
-(29, 29, 'chat_imgs\\avatares\\29.jpg', '', NULL, NULL),
-(30, 30, 'chat_imgs\\avatares\\30.jpg', '', NULL, NULL),
-(31, 31, 'chat_imgs\\avatares\\31.jpg', '', NULL, NULL),
-(32, 32, 'chat_imgs\\avatares\\32.jpg', '', NULL, NULL),
-(33, 33, 'chat_imgs\\avatares\\33.jpg', '', NULL, NULL),
-(34, 34, 'chat_imgs\\avatares\\34.jpg', '', NULL, NULL),
-(35, 35, 'chat_imgs\\avatares\\35.jpg', '', NULL, NULL),
-(36, 36, 'chat_imgs\\avatares\\36.jpg', '', NULL, NULL),
-(37, 37, 'chat_imgs\\avatares\\37.jpg', '', NULL, NULL),
-(38, 38, 'chat_imgs\\avatares\\38.jpg', '', NULL, NULL),
-(39, 39, 'chat_imgs\\avatares\\39.jpg', '', NULL, NULL),
-(40, 40, 'chat_imgs\\avatares\\40.jpg', '', NULL, NULL),
-(41, 41, 'chat_imgs\\avatares\\41.jpg', '', NULL, NULL),
-(42, 42, 'chat_imgs\\avatares\\42.jpg', '', NULL, NULL),
-(43, 43, 'chat_imgs\\avatares\\43.jpg', '', NULL, NULL),
-(44, 44, 'chat_imgs\\avatares\\44.jpg', '', NULL, NULL),
-(45, 45, 'chat_imgs\\avatares\\45.jpg', '', NULL, NULL),
-(46, 46, 'chat_imgs\\avatares\\46.jpg', '', NULL, NULL),
-(47, 47, 'chat_imgs\\avatares\\47.jpg', '', NULL, NULL),
-(48, 48, 'chat_imgs\\avatares\\48.jpg', '', NULL, NULL),
-(49, 49, 'chat_imgs\\avatares\\49.jpg', '', NULL, NULL),
-(50, 50, 'chat_imgs\\avatares\\50.jpg', '', NULL, NULL);
+INSERT INTO `twn_user_photo` (`id`, `user_id`, `link`, `description`) VALUES
+(1, 1, 'chat_imgs\\avatares\\1.jpg', ''),
+(2, 2, 'chat_imgs\\avatares\\2.jpg', ''),
+(3, 3, 'chat_imgs\\avatares\\3.jpg', ''),
+(4, 4, 'chat_imgs\\avatares\\4.jpg', ''),
+(5, 5, 'chat_imgs\\avatares\\5.jpg', ''),
+(6, 6, 'chat_imgs\\avatares\\6.jpg', ''),
+(7, 7, 'chat_imgs\\avatares\\7.jpg', ''),
+(8, 8, 'chat_imgs\\avatares\\8.jpg', ''),
+(9, 9, 'chat_imgs\\avatares\\9.jpg', ''),
+(10, 10, 'chat_imgs\\avatares\\10.jpg', ''),
+(11, 11, 'chat_imgs\\avatares\\11.jpg', ''),
+(12, 12, 'chat_imgs\\avatares\\12.jpg', ''),
+(13, 13, 'chat_imgs\\avatares\\13.jpg', ''),
+(14, 14, 'chat_imgs\\avatares\\14.jpg', ''),
+(15, 15, 'chat_imgs\\avatares\\15.jpg', ''),
+(16, 16, 'chat_imgs\\avatares\\16.jpg', ''),
+(17, 17, 'chat_imgs\\avatares\\17.jpg', ''),
+(18, 18, 'chat_imgs\\avatares\\18.jpg', ''),
+(19, 19, 'chat_imgs\\avatares\\19.jpg', ''),
+(20, 20, 'chat_imgs\\avatares\\20.jpg', ''),
+(21, 21, 'chat_imgs\\avatares\\21.jpg', ''),
+(22, 22, 'chat_imgs\\avatares\\22.jpg', ''),
+(23, 23, 'chat_imgs\\avatares\\23.jpg', ''),
+(24, 24, 'chat_imgs\\avatares\\24.jpg', ''),
+(25, 25, 'chat_imgs\\avatares\\25.jpg', ''),
+(26, 26, 'chat_imgs\\avatares\\26.jpg', ''),
+(27, 27, 'chat_imgs\\avatares\\27.jpg', ''),
+(28, 28, 'chat_imgs\\avatares\\28.jpg', ''),
+(29, 29, 'chat_imgs\\avatares\\29.jpg', ''),
+(30, 30, 'chat_imgs\\avatares\\30.jpg', ''),
+(31, 31, 'chat_imgs\\avatares\\31.jpg', ''),
+(32, 32, 'chat_imgs\\avatares\\32.jpg', ''),
+(33, 33, 'chat_imgs\\avatares\\33.jpg', ''),
+(34, 34, 'chat_imgs\\avatares\\34.jpg', ''),
+(35, 35, 'chat_imgs\\avatares\\35.jpg', ''),
+(36, 36, 'chat_imgs\\avatares\\36.jpg', ''),
+(37, 37, 'chat_imgs\\avatares\\37.jpg', ''),
+(38, 38, 'chat_imgs\\avatares\\38.jpg', ''),
+(39, 39, 'chat_imgs\\avatares\\39.jpg', ''),
+(40, 40, 'chat_imgs\\avatares\\40.jpg', ''),
+(41, 41, 'chat_imgs\\avatares\\41.jpg', ''),
+(42, 42, 'chat_imgs\\avatares\\42.jpg', ''),
+(43, 43, 'chat_imgs\\avatares\\43.jpg', ''),
+(44, 44, 'chat_imgs\\avatares\\44.jpg', ''),
+(45, 45, 'chat_imgs\\avatares\\45.jpg', ''),
+(46, 46, 'chat_imgs\\avatares\\46.jpg', ''),
+(47, 47, 'chat_imgs\\avatares\\47.jpg', ''),
+(48, 48, 'chat_imgs\\avatares\\48.jpg', ''),
+(49, 49, 'chat_imgs\\avatares\\49.jpg', ''),
+(50, 50, 'chat_imgs\\avatares\\50.jpg', '');
 
 --
 -- Índices para tablas volcadas
@@ -597,7 +595,7 @@ ALTER TABLE `twn_chat_msg`
 -- AUTO_INCREMENT de la tabla `twn_interested_in`
 --
 ALTER TABLE `twn_interested_in`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `twn_likes`
@@ -615,7 +613,7 @@ ALTER TABLE `twn_matches`
 -- AUTO_INCREMENT de la tabla `twn_rejects`
 --
 ALTER TABLE `twn_rejects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT de la tabla `twn_reports`
@@ -633,7 +631,7 @@ ALTER TABLE `twn_users`
 -- AUTO_INCREMENT de la tabla `twn_user_photo`
 --
 ALTER TABLE `twn_user_photo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- Restricciones para tablas volcadas

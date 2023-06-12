@@ -29,4 +29,3 @@ if (isset($_REQUEST["userId"])) {
     echo json_encode($response);
     exit;
 }
-?>

@@ -127,7 +127,8 @@ class AdminModel
         }
     }
 
-    public function deleteTicket($ticketId) {
+    public function deleteTicket($ticketId)
+    {
         $stmt = $this->conn->prepare("SELECT * FROM twn_reports WHERE id = ?");
         $stmt->bind_param("i", $ticketId);
         $stmt->execute();

@@ -230,210 +230,190 @@ class UserModel
         $this->closeConnection();
     }
 
-    public function getRandomProfile($userId, $attempt = 0)
+    private function hasInterestedIn($userId)
     {
-        // Obtener los perfiles rechazados o bloqueados por el usuario
-        $rejectedProfiles = $this->getRejectedProfiles($userId);
-    
-        // Verificar si el usuario tiene un registro en la tabla twn_interested_in
         $interestedInQuery = "SELECT gender_id FROM twn_interested_in WHERE user_id = ?";
         $stmtInterestedIn = $this->conn->prepare($interestedInQuery);
         $stmtInterestedIn->bind_param("i", $userId);
         $stmtInterestedIn->execute();
         $interestedInResult = $stmtInterestedIn->get_result();
         $stmtInterestedIn->close();
-    
-        // Obtener el gender_id del usuario en twn_interested_in
-        $interestedInRow = $interestedInResult->fetch_assoc();
-        $interestedInGenderId = $interestedInRow['gender_id'];
-    
-        // Obtener los hobbies del usuario
-        $userHobbies = $this->getUserHobbies($userId);
-    
-        // Consulta SQL para obtener perfiles con los mismos hobbies
-        $sameHobbiesQuery = "SELECT u.*, p.link, g.name AS gender_name
-                            FROM twn_users u
-                            JOIN twn_user_photo p ON u.id = p.user_id
-                            JOIN twn_genders g ON u.gender_id = g.id
-                            WHERE u.id != ?";
-    
-        if ($interestedInGenderId == "B") {
-            // Si el gender_id en twn_interested_in es "B", agregar filtro de género para F y M
-            $sameHobbiesQuery .= " AND u.gender_id IN ('F', 'M')";
-        } else {
-            // Si el gender_id en twn_interested_in no es "B", agregar filtro de género
-            $sameHobbiesQuery .= " AND u.gender_id = ?";
+
+        if ($interestedInResult && $interestedInResult->num_rows > 0) {
+            $interestedInRow = $interestedInResult->fetch_assoc();
+            return $interestedInRow['gender_id'];
         }
-    
-        // Agregar filtro de hobbies similares
-        if (!empty($userHobbies)) {
-            $sameHobbiesQuery .= " AND (u.hobbies = ? OR u.hobbies = '')";
+
+        return "";
+    }
+
+    private function hasHobbies($userId)
+    {
+        $hobbiesQuery = "SELECT hobbies FROM twn_users WHERE id = ?";
+        $stmtHobbies = $this->conn->prepare($hobbiesQuery);
+        $stmtHobbies->bind_param("i", $userId);
+        $stmtHobbies->execute();
+        $hobbiesResult = $stmtHobbies->get_result();
+        $stmtHobbies->close();
+
+        if ($hobbiesResult && $hobbiesResult->num_rows > 0) {
+            $hobbiesRow = $hobbiesResult->fetch_assoc();
+            return $hobbiesRow['hobbies'];
         }
-    
-        // Ordenar por coincidencia de hobbies
-        $sameHobbiesQuery .= " ORDER BY (u.hobbies = ? OR u.hobbies = '') DESC";
-    
-        // Ejecutar la consulta SQL para obtener perfiles con los mismos hobbies
-        $stmtSameHobbies = $this->conn->prepare($sameHobbiesQuery);
-    
-        // Vincular los parámetros
-        if ($interestedInGenderId != "B" && !empty($userHobbies)) {
-            $stmtSameHobbies->bind_param("issss", $userId, $interestedInGenderId, $userHobbies, $userHobbies, $userId);
-        } elseif ($interestedInGenderId != "B") {
-            $stmtSameHobbies->bind_param("isss", $userId, $interestedInGenderId, $userHobbies, $userId);
-        } elseif (!empty($userHobbies)) {
-            $stmtSameHobbies->bind_param("iss", $userId, $userHobbies, $userHobbies);
-        } else {
-            $stmtSameHobbies->bind_param("is", $userId, $userHobbies);
+
+        return "";
+    }
+
+    public function getRandomProfile($userId, $attempt = 0)
+    {
+        // Obtener los perfiles rechazados o bloqueados por el usuario
+        $rejectedProfiles = $this->getRejectedProfiles($userId);
+
+        // Verificar si el usuario tiene un registro en la tabla twn_interested_in
+        $interestedInGenderId = $this->hasInterestedIn($userId);
+
+        // Verificar si el usuario tiene hobbies
+        $userHobbies = $this->hasHobbies($userId);
+
+        // Consultar perfiles aleatorios con filtros
+        $randomProfile = $this->getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles);
+
+        // Si no se encontraron perfiles o todos los perfiles están rechazados/bloqueados, intentar de nuevo hasta 3 veces
+        if ($randomProfile === null && $attempt < 3) {
+            return $this->getRandomProfile($userId, $attempt + 1);
         }
-    
-        // Ejecutar la consulta SQL para obtener perfiles con los mismos hobbies
-        $stmtSameHobbies->execute();
-    
-        // Obtener el resultado
-        $sameHobbiesResult = $stmtSameHobbies->get_result();
-    
-        // Verificar si se obtuvieron perfiles con los mismos hobbies
-        if ($sameHobbiesResult && $sameHobbiesResult->num_rows > 0) {
-            // Obtener todos los perfiles con los mismos hobbies
-            $sameHobbiesProfiles = $sameHobbiesResult->fetch_all(MYSQLI_ASSOC);
-    
-            // Filtrar los perfiles rechazados
-            $filteredProfiles = [];
-            foreach ($sameHobbiesProfiles as $profile) {
-                if (!in_array($profile['id'], $rejectedProfiles)) {
-                    $filteredProfiles[] = $profile;
-                }
-            }
-    
-            // Verificar si quedan perfiles disponibles después de filtrar los rechazados
-            if (!empty($filteredProfiles)) {
-                // Obtener un perfil aleatorio de los perfiles disponibles
-                $randomProfile = $filteredProfiles[array_rand($filteredProfiles)];
-    
-                return [
-                    'id' => $randomProfile['id'],
-                    'first_name' => $randomProfile['first_name'],
-                    'last_name' => $randomProfile['last_name'],
-                    'nick' => $randomProfile['screen_name'],
-                    'gender_id' => $randomProfile['gender_id'],
-                    'gender_name' => $randomProfile['gender_name'],
-                    'description' => $randomProfile['description'],
-                    'hobbies' => $randomProfile['hobbies'],
-                    'link' => $randomProfile['link']
-                ];
-            }
+
+        // Si no se encontraron perfiles o agotó los intentos, obtener perfiles aleatorios sin filtrar por hobbies
+        if ($randomProfile === null) {
+            $randomProfile = $this->getRandomProfileWithoutHobbies($userId, $interestedInGenderId);
         }
-    
-        // Si no se encontraron perfiles con los mismos hobbies, obtener perfiles aleatorios que cumplan con el requisito del género
+
+        return $randomProfile;
+    }
+
+    private function getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles)
+    {
+        // Construir consulta SQL para obtener perfiles aleatorios con filtros
         $randomProfileQuery = "SELECT u.*, p.link, g.name AS gender_name
                                FROM twn_users u
                                JOIN twn_user_photo p ON u.id = p.user_id
                                JOIN twn_genders g ON u.gender_id = g.id
                                WHERE u.id != ?";
-    
-        if ($interestedInGenderId == "B") {
-            // Si el gender_id en twn_interested_in es "B", agregar filtro de género para F y M
-            $randomProfileQuery .= " AND u.gender_id IN ('F', 'M')";
-        } else {
-            // Si el gender_id en twn_interested_in no es "B", agregar filtro de género
-            $randomProfileQuery .= " AND u.gender_id = ?";
-        }
-    
-        $randomProfileQuery .= " AND u.id NOT IN (
-            SELECT user2_id FROM twn_matches WHERE user1_id = ?
-        )";
-    
-        // Ordenar de forma aleatoria
-        $randomProfileQuery .= " ORDER BY RAND()";
-    
-        // Ejecutar la consulta SQL para obtener perfiles aleatorios que cumplan con el requisito del género
-        $stmtRandomProfile = $this->conn->prepare($randomProfileQuery);
-    
-        // Vincular los parámetros
-        if ($interestedInGenderId != "B") {
-            $stmtRandomProfile->bind_param("iii", $userId, $interestedInGenderId, $userId);
-        } else {
-            $stmtRandomProfile->bind_param("ii", $userId, $userId);
-        }
-    
-        // Ejecutar la consulta SQL para obtener perfiles aleatorios que cumplan con el requisito del género
-        $stmtRandomProfile->execute();
-    
-        // Obtener el resultado
-        $randomProfileResult = $stmtRandomProfile->get_result();
-    
-        // Verificar si se obtuvo un perfil aleatorio
-        if ($randomProfileResult && $randomProfileResult->num_rows > 0) {
-            // Obtener el perfil aleatorio
-            $randomProfile = $randomProfileResult->fetch_assoc();
-    
-            // Verificar si el perfil está en la lista de perfiles rechazados
-            $profileId = $randomProfile['id'];
-            if (in_array($profileId, $rejectedProfiles)) {
-                // Verificar el límite máximo de intentos para evitar el bucle infinito
-                $maxAttempts = 10;
-                if ($attempt < $maxAttempts) {
-                    // Llamar recursivamente a la función para obtener otro perfil aleatorio
-                    return $this->getRandomProfile($userId, $attempt + 1);
-                } else {
-                    // Si se alcanza el límite máximo de intentos, devolver null
-                    return null;
-                }
+
+        $params = [$userId];
+        $paramTypes = "i";
+
+        // Agregar filtro de género si el usuario tiene registro en twn_interested_in
+        if (!empty($interestedInGenderId)) {
+            // Verificar si el usuario tiene interés en ambos géneros
+            if ($interestedInGenderId == "B") {
+                // Mostrar perfiles masculinos (gender_id = M) y femeninos (gender_id = F)
+                $randomProfileQuery .= " AND (u.gender_id = 'M' OR u.gender_id = 'F')";
             } else {
-                // Devolver el perfil aleatorio
-                return [
-                    'id' => $randomProfile['id'],
-                    'first_name' => $randomProfile['first_name'],
-                    'last_name' => $randomProfile['last_name'],
-                    'nick' => $randomProfile['screen_name'],
-                    'gender_id' => $randomProfile['gender_id'],
-                    'gender_name' => $randomProfile['gender_name'],
-                    'description' => $randomProfile['description'],
-                    'hobbies' => $randomProfile['hobbies'],
-                    'link' => $randomProfile['link']
-                ];
+                $randomProfileQuery .= " AND u.gender_id = ?";
+                $params[] = $interestedInGenderId;
+                $paramTypes .= "s";
             }
-        } else {
-            return null;
         }
+
+        // Agregar filtro de hobbies si el usuario tiene hobbies
+        if (!empty($userHobbies)) {
+            $randomProfileQuery .= " AND (";
+            $hobbiesArray = explode(",", $userHobbies);
+            $numHobbies = count($hobbiesArray);
+
+            for ($i = 0; $i < $numHobbies; $i++) {
+                $randomProfileQuery .= "u.hobbies LIKE ?";
+                $params[] = "%" . $hobbiesArray[$i] . "%";
+                $paramTypes .= "s";
+
+                if ($i < $numHobbies - 1) {
+                    $randomProfileQuery .= " OR ";
+                }
+            }
+
+            $randomProfileQuery .= ")";
+        }
+
+        // Ordenar aleatoriamente
+        $randomProfileQuery .= " ORDER BY RAND()";
+
+        // Ejecutar la consulta SQL para obtener perfiles aleatorios con filtros
+        $stmtRandomProfile = $this->conn->prepare($randomProfileQuery);
+        $stmtRandomProfile->bind_param($paramTypes, ...$params);
+        $stmtRandomProfile->execute();
+        $randomProfileResult = $stmtRandomProfile->get_result();
+
+        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados
+        while ($row = $randomProfileResult->fetch_assoc()) {
+            if (!in_array($row['id'], $rejectedProfiles)) {
+                return $row;
+            }
+        }
+
+        // Si no se encontró ningún perfil, retornar null
+        return null;
     }
 
-
-
-
-    private function getUserHobbies($userId)
+    private function getRandomProfileWithoutHobbies($userId, $interestedInGenderId, $attempt = 0)
     {
-        // Consulta SQL utilizando sentencias preparadas
-        $query = "SELECT hobbies FROM twn_users WHERE id = ?";
+        // Obtener los perfiles rechazados o bloqueados por el usuario
+        $rejectedProfiles = $this->getRejectedProfiles($userId);
 
-        // Preparar la declaración
-        $stmt = $this->conn->prepare($query);
+        // Consulta SQL para obtener perfiles aleatorios sin coincidencia en hobbies
+        $randomProfileQuery = "SELECT u.*, p.link, g.name AS gender_name
+                               FROM twn_users u
+                               JOIN twn_user_photo p ON u.id = p.user_id
+                               JOIN twn_genders g ON u.gender_id = g.id
+                               WHERE u.id != ?";
 
-        // Vincular el parámetro
-        $stmt->bind_param("i", $userId);
-
-        // Ejecutar la consulta SQL
-        $stmt->execute();
-
-        // Obtener el resultado
-        $result = $stmt->get_result();
-
-        // Verificar si se obtuvo un resultado
-        if ($result && $result->num_rows > 0) {
-            // Obtener los hobbies del usuario
-            $row = $result->fetch_assoc();
-            $hobbies = $row['hobbies'];
-
-            // Devolver los hobbies
-            return $hobbies;
+        // Agregar filtro de género si el usuario tiene registro en twn_interested_in
+        if (!empty($interestedInGenderId)) {
+            $randomProfileQuery .= " AND u.gender_id = ?";
         }
 
-        // Si no se obtuvo un resultado, devolver un valor por defecto (por ejemplo, una cadena vacía o un arreglo vacío)
-        return '';
+        // Ordenar aleatoriamente
+        $randomProfileQuery .= " ORDER BY RAND()";
 
-        // Cerrar la declaración
-        $stmt->close();
+        // Ejecutar la consulta SQL para obtener perfiles aleatorios sin coincidencia en hobbies
+        $stmtRandomProfile = $this->conn->prepare($randomProfileQuery);
+
+        // Vincular los parámetros
+        if (!empty($interestedInGenderId)) {
+            $stmtRandomProfile->bind_param("is", $userId, $interestedInGenderId);
+        } else {
+            $stmtRandomProfile->bind_param("i", $userId);
+        }
+
+        // Ejecutar la consulta SQL para obtener perfiles aleatorios sin coincidencia en hobbies
+        $stmtRandomProfile->execute();
+
+        // Obtener el resultado
+        $randomProfileResult = $stmtRandomProfile->get_result();
+
+        // Obtener el número de perfiles encontrados
+        $numProfiles = $randomProfileResult->num_rows;
+
+        // Si no se encontraron perfiles o todos los perfiles están rechazados/bloqueados, intentar de nuevo hasta 3 veces
+        if ($numProfiles == 0 || $numProfiles == count($rejectedProfiles)) {
+            if ($attempt < 3) {
+                return $this->getRandomProfileWithoutHobbies($userId, $interestedInGenderId, $attempt + 1);
+            } else {
+                return null; // Si se intentó 3 veces y no se encontró perfil, retornar null
+            }
+        }
+
+        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados
+        $randomProfile = null;
+        while ($row = $randomProfileResult->fetch_assoc()) {
+            if (!in_array($row['id'], $rejectedProfiles)) {
+                $randomProfile = $row;
+                break;
+            }
+        }
+
+        // Retornar el perfil aleatorio seleccionado
+        return $randomProfile;
     }
 
     // Función para agregar o actualizar un registro de coincidencia en la base de datos

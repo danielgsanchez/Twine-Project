@@ -26,4 +26,3 @@ if ($success) {
 } else {
     echo "error";
 }
-?>

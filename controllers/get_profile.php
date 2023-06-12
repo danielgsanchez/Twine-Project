@@ -12,5 +12,3 @@ if (isset($_GET['userID'])) {
     $profile = $userModel->getFullProfile($userID);
     echo json_encode($profile);
 }
-
-?>

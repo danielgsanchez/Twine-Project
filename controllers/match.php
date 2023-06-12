@@ -25,4 +25,3 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'match') {
 // Si no se cumple ninguna condición, devuelve un mensaje de error
 echo json_encode(['success' => false, 'message' => 'Invalid request']);
 exit;
-?>
