@@ -188,6 +188,14 @@ $genders = getGenders();
             color: red;
         }
 
+        .profile-icon-large {
+            font-size: 48px;
+            /* Tamaño del icono */
+            display: block;
+            margin: 0 auto;
+            text-align: center;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -278,8 +286,12 @@ $genders = getGenders();
                 <form action="controllers/save_profile.php" method="POST" id="profileForm" name="profileForm" enctype="multipart/form-data">
                     <div class="mb-3 d-flex justify-content-center align-items-center">
                         <div class="position-relative">
-                            <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto;"><br />
-                            <input type="file" id="profile-image" name="profile-image">
+                            <?php if (empty($profileData[0]["link"])) : ?>
+                                <i class="fas fa-user-circle profile-icon-large"></i>
+                            <?php else : ?>
+                                <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto;">
+                            <?php endif; ?>
+                            <br /><input type="file" id="profile-image" name="profile-image">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -289,7 +301,7 @@ $genders = getGenders();
                     </div>
                     <div class="mb-3">
                         <label for="last_name" class="form-label">Apellido:</label>
-                        <input type="text" id="last_name" name="last_name" value=<?php echo $profileData[0]['last_name'] ?> class="form-control" required>
+                        <input type="text" id="last_name" name="last_name" value="<?php echo $profileData[0]['last_name'] ?>" class="form-control" required>
                         <small id="last_name-error" class="error-text"></small>
                     </div>
                     <div class="mb-3">
@@ -312,7 +324,8 @@ $genders = getGenders();
                         <label for="interested_in" class="form-label">Busco:</label>
                         <select name="interested_in" id="interested_in" class="form-control" required>
                             <?php foreach ($genders as $id => $gender) : ?>
-                                <option value="<?php echo $id; ?>" <?php echo ($id == $interested_in['gender_id']) ? 'selected' : ''; ?>>
+                                <?php $isSelected = (!empty($interested_in) && isset($interested_in['gender_id']) && $id == $interested_in['gender_id']); ?>
+                                <option value="<?php echo $id; ?>" <?php echo $isSelected ? 'selected' : ''; ?>>
                                     <?php echo $gender['name']; ?>
                                 </option>
                             <?php endforeach; ?>

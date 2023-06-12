@@ -56,23 +56,30 @@ class UserModel
     // Método para obtener la foto de un usuario por su ID
     function getPhoto($id)
     {
-        $sql = "SELECT * FROM twn_user_photo WHERE user_id = '$id'";
-        $result = $this->conn->query($sql);
-        if ($result) {
+        $sql = "SELECT * FROM twn_user_photo WHERE user_id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
             $row = $result->fetch_assoc();
             return $row;
         } else {
-            return 'No existe esa ID en al base de datos';
+            return null;
         }
 
-        $this->closeConnection();
+        $stmt->close();
     }
 
     // Método para obtener el perfil completo (perfil + foto) de un usuario por su ID
     function getFullProfile($id)
     {
         $msg = "";
-        $sql = $sql = "SELECT u.*, p.link FROM twn_users u JOIN twn_user_photo p ON u.id = p.id WHERE u.id = '$id'";
+        $sql = "SELECT u.*, p.link 
+        FROM twn_users u 
+        LEFT JOIN twn_user_photo p ON u.id = p.user_id 
+        WHERE u.id = '$id'";
         $result = $this->conn->query($sql);
 
         if ($result && $result->num_rows > 0) {
@@ -178,7 +185,7 @@ class UserModel
             return $msg;
         } else {
             $hashedPw = md5($pw);
-            $insertQuery = "INSERT INTO twn_users (first_name, first_name, email, password) VALUES (?, ?, ?, ?)";
+            $insertQuery = "INSERT INTO twn_users (first_name, screen_name, email, password) VALUES (?, ?, ?, ?)";
             $stmt = $this->conn->prepare($insertQuery);
             $stmt->bind_param('ssss', $nombre, $nombre, $email, $hashedPw);
             // Ejecutar la consulta
@@ -223,83 +230,210 @@ class UserModel
         $this->closeConnection();
     }
 
-    public function getRandomProfile($userId)
+    public function getRandomProfile($userId, $attempt = 0)
     {
         // Obtener los perfiles rechazados o bloqueados por el usuario
         $rejectedProfiles = $this->getRejectedProfiles($userId);
-
-        // Obtener los hobbies del usuario logeado
+    
+        // Verificar si el usuario tiene un registro en la tabla twn_interested_in
+        $interestedInQuery = "SELECT gender_id FROM twn_interested_in WHERE user_id = ?";
+        $stmtInterestedIn = $this->conn->prepare($interestedInQuery);
+        $stmtInterestedIn->bind_param("i", $userId);
+        $stmtInterestedIn->execute();
+        $interestedInResult = $stmtInterestedIn->get_result();
+        $stmtInterestedIn->close();
+    
+        // Obtener el gender_id del usuario en twn_interested_in
+        $interestedInRow = $interestedInResult->fetch_assoc();
+        $interestedInGenderId = $interestedInRow['gender_id'];
+    
+        // Obtener los hobbies del usuario
         $userHobbies = $this->getUserHobbies($userId);
-
-
-        // Consulta SQL para seleccionar un perfil aleatorio que no haya sido rechazado o bloqueado
-        $query = "SELECT u.*, p.link, g.name AS gender_name
-        FROM twn_users u
-        JOIN twn_user_photo p ON u.id = p.user_id
-        JOIN twn_genders g ON u.gender_id = g.id
-        WHERE u.id != $userId
-            AND u.id NOT IN (
-                SELECT user2_id FROM twn_matches WHERE user1_id = $userId
-                UNION
-                SELECT user1_id FROM twn_matches WHERE user2_id = $userId
-            )
-            AND u.gender_id = (SELECT gender_id FROM twn_interested_in WHERE user_id = $userId)
-        ORDER BY CASE WHEN FIND_IN_SET('$userHobbies', u.hobbies) > 0 THEN 0 ELSE 1 END, RAND()
-        LIMIT 1";
-
-        // Ejecutar la consulta SQL y obtener el resultado
-        $result = mysqli_query($this->conn, $query);
-
-        // Verificar si se obtuvo un resultado
-        if ($result && mysqli_num_rows($result) > 0) {
+    
+        // Consulta SQL para obtener perfiles con los mismos hobbies
+        $sameHobbiesQuery = "SELECT u.*, p.link, g.name AS gender_name
+                            FROM twn_users u
+                            JOIN twn_user_photo p ON u.id = p.user_id
+                            JOIN twn_genders g ON u.gender_id = g.id
+                            WHERE u.id != ?";
+    
+        if ($interestedInGenderId == "B") {
+            // Si el gender_id en twn_interested_in es "B", agregar filtro de género para F y M
+            $sameHobbiesQuery .= " AND u.gender_id IN ('F', 'M')";
+        } else {
+            // Si el gender_id en twn_interested_in no es "B", agregar filtro de género
+            $sameHobbiesQuery .= " AND u.gender_id = ?";
+        }
+    
+        // Agregar filtro de hobbies similares
+        if (!empty($userHobbies)) {
+            $sameHobbiesQuery .= " AND (u.hobbies = ? OR u.hobbies = '')";
+        }
+    
+        // Ordenar por coincidencia de hobbies
+        $sameHobbiesQuery .= " ORDER BY (u.hobbies = ? OR u.hobbies = '') DESC";
+    
+        // Ejecutar la consulta SQL para obtener perfiles con los mismos hobbies
+        $stmtSameHobbies = $this->conn->prepare($sameHobbiesQuery);
+    
+        // Vincular los parámetros
+        if ($interestedInGenderId != "B" && !empty($userHobbies)) {
+            $stmtSameHobbies->bind_param("issss", $userId, $interestedInGenderId, $userHobbies, $userHobbies, $userId);
+        } elseif ($interestedInGenderId != "B") {
+            $stmtSameHobbies->bind_param("isss", $userId, $interestedInGenderId, $userHobbies, $userId);
+        } elseif (!empty($userHobbies)) {
+            $stmtSameHobbies->bind_param("iss", $userId, $userHobbies, $userHobbies);
+        } else {
+            $stmtSameHobbies->bind_param("is", $userId, $userHobbies);
+        }
+    
+        // Ejecutar la consulta SQL para obtener perfiles con los mismos hobbies
+        $stmtSameHobbies->execute();
+    
+        // Obtener el resultado
+        $sameHobbiesResult = $stmtSameHobbies->get_result();
+    
+        // Verificar si se obtuvieron perfiles con los mismos hobbies
+        if ($sameHobbiesResult && $sameHobbiesResult->num_rows > 0) {
+            // Obtener todos los perfiles con los mismos hobbies
+            $sameHobbiesProfiles = $sameHobbiesResult->fetch_all(MYSQLI_ASSOC);
+    
+            // Filtrar los perfiles rechazados
+            $filteredProfiles = [];
+            foreach ($sameHobbiesProfiles as $profile) {
+                if (!in_array($profile['id'], $rejectedProfiles)) {
+                    $filteredProfiles[] = $profile;
+                }
+            }
+    
+            // Verificar si quedan perfiles disponibles después de filtrar los rechazados
+            if (!empty($filteredProfiles)) {
+                // Obtener un perfil aleatorio de los perfiles disponibles
+                $randomProfile = $filteredProfiles[array_rand($filteredProfiles)];
+    
+                return [
+                    'id' => $randomProfile['id'],
+                    'first_name' => $randomProfile['first_name'],
+                    'last_name' => $randomProfile['last_name'],
+                    'nick' => $randomProfile['screen_name'],
+                    'gender_id' => $randomProfile['gender_id'],
+                    'gender_name' => $randomProfile['gender_name'],
+                    'description' => $randomProfile['description'],
+                    'hobbies' => $randomProfile['hobbies'],
+                    'link' => $randomProfile['link']
+                ];
+            }
+        }
+    
+        // Si no se encontraron perfiles con los mismos hobbies, obtener perfiles aleatorios que cumplan con el requisito del género
+        $randomProfileQuery = "SELECT u.*, p.link, g.name AS gender_name
+                               FROM twn_users u
+                               JOIN twn_user_photo p ON u.id = p.user_id
+                               JOIN twn_genders g ON u.gender_id = g.id
+                               WHERE u.id != ?";
+    
+        if ($interestedInGenderId == "B") {
+            // Si el gender_id en twn_interested_in es "B", agregar filtro de género para F y M
+            $randomProfileQuery .= " AND u.gender_id IN ('F', 'M')";
+        } else {
+            // Si el gender_id en twn_interested_in no es "B", agregar filtro de género
+            $randomProfileQuery .= " AND u.gender_id = ?";
+        }
+    
+        $randomProfileQuery .= " AND u.id NOT IN (
+            SELECT user2_id FROM twn_matches WHERE user1_id = ?
+        )";
+    
+        // Ordenar de forma aleatoria
+        $randomProfileQuery .= " ORDER BY RAND()";
+    
+        // Ejecutar la consulta SQL para obtener perfiles aleatorios que cumplan con el requisito del género
+        $stmtRandomProfile = $this->conn->prepare($randomProfileQuery);
+    
+        // Vincular los parámetros
+        if ($interestedInGenderId != "B") {
+            $stmtRandomProfile->bind_param("iii", $userId, $interestedInGenderId, $userId);
+        } else {
+            $stmtRandomProfile->bind_param("ii", $userId, $userId);
+        }
+    
+        // Ejecutar la consulta SQL para obtener perfiles aleatorios que cumplan con el requisito del género
+        $stmtRandomProfile->execute();
+    
+        // Obtener el resultado
+        $randomProfileResult = $stmtRandomProfile->get_result();
+    
+        // Verificar si se obtuvo un perfil aleatorio
+        if ($randomProfileResult && $randomProfileResult->num_rows > 0) {
             // Obtener el perfil aleatorio
-            $row = mysqli_fetch_assoc($result);
-
-            // Verificar si el perfil está en la lista de perfiles rechazados o bloqueados
-            $profileId = $row['id'];
+            $randomProfile = $randomProfileResult->fetch_assoc();
+    
+            // Verificar si el perfil está en la lista de perfiles rechazados
+            $profileId = $randomProfile['id'];
             if (in_array($profileId, $rejectedProfiles)) {
-                // Si el perfil está rechazado o bloqueado, llamar recursivamente a la función para obtener otro perfil aleatorio
-                return $this->getRandomProfile($userId);
+                // Verificar el límite máximo de intentos para evitar el bucle infinito
+                $maxAttempts = 10;
+                if ($attempt < $maxAttempts) {
+                    // Llamar recursivamente a la función para obtener otro perfil aleatorio
+                    return $this->getRandomProfile($userId, $attempt + 1);
+                } else {
+                    // Si se alcanza el límite máximo de intentos, devolver null
+                    return null;
+                }
             } else {
                 // Devolver el perfil aleatorio
                 return [
-                    'id' => $row['id'],
-                    'first_name' => $row['first_name'],
-                    'last_name' => $row['last_name'],
-                    'nick' => $row['screen_name'],
-                    'gender_id' => $row['gender_id'],
-                    'gender_name' => $row['gender_name'],
-                    'description' => $row['description'],
-                    'hobbies' => $row['hobbies'],
-                    'link' => $row['link']
+                    'id' => $randomProfile['id'],
+                    'first_name' => $randomProfile['first_name'],
+                    'last_name' => $randomProfile['last_name'],
+                    'nick' => $randomProfile['screen_name'],
+                    'gender_id' => $randomProfile['gender_id'],
+                    'gender_name' => $randomProfile['gender_name'],
+                    'description' => $randomProfile['description'],
+                    'hobbies' => $randomProfile['hobbies'],
+                    'link' => $randomProfile['link']
                 ];
             }
         } else {
             return null;
         }
-
-        $this->closeConnection();
     }
+
+
+
 
     private function getUserHobbies($userId)
     {
-        // Consulta SQL para obtener los hobbies del usuario logeado
-        $query = "SELECT hobbies FROM twn_users WHERE id = $userId";
+        // Consulta SQL utilizando sentencias preparadas
+        $query = "SELECT hobbies FROM twn_users WHERE id = ?";
 
-        // Ejecutar la consulta SQL y obtener el resultado
-        $result = mysqli_query($this->conn, $query);
+        // Preparar la declaración
+        $stmt = $this->conn->prepare($query);
+
+        // Vincular el parámetro
+        $stmt->bind_param("i", $userId);
+
+        // Ejecutar la consulta SQL
+        $stmt->execute();
+
+        // Obtener el resultado
+        $result = $stmt->get_result();
 
         // Verificar si se obtuvo un resultado
-        if ($result && mysqli_num_rows($result) > 0) {
+        if ($result && $result->num_rows > 0) {
             // Obtener los hobbies del usuario
-            $row = mysqli_fetch_assoc($result);
+            $row = $result->fetch_assoc();
             $hobbies = $row['hobbies'];
 
             // Devolver los hobbies
             return $hobbies;
-        } else {
-            return '';
         }
+
+        // Si no se obtuvo un resultado, devolver un valor por defecto (por ejemplo, una cadena vacía o un arreglo vacío)
+        return '';
+
+        // Cerrar la declaración
+        $stmt->close();
     }
 
     // Función para agregar o actualizar un registro de coincidencia en la base de datos
@@ -353,6 +487,22 @@ class UserModel
     {
         $msg = "";
         $rutaImagenAnterior = $this->getImagePath($id);
+        // Verificar si la foto de perfil existe para el usuario
+        $existingPhoto = $this->getPhoto($id);
+
+        if (!$existingPhoto) {
+            // La foto de perfil no existe, realizar una inserción en lugar de una actualización
+            $sqlInsertPhoto = "INSERT INTO twn_user_photo (user_id, link) VALUES (?, ?)";
+            $stmtInsertPhoto = $this->conn->prepare($sqlInsertPhoto);
+            $stmtInsertPhoto->bind_param("is", $id, $img);
+            $stmtInsertPhoto->execute();
+
+            if ($stmtInsertPhoto->affected_rows > 0) {
+                $msg .= "Inserción de foto de perfil exitosa. ";
+            }
+
+            $stmtInsertPhoto->close();
+        }
 
         if (!empty($img) || empty($rutaImagenAnterior)) {
             // Preparar la consulta SQL para actualizar la ruta de la imagen en la tabla twn_user_photo
@@ -415,29 +565,32 @@ class UserModel
             $stmt->close();
         }
 
-        // Obtener el valor actual de interested_in
-        $interested_in_value = $this->getInterestedIn($id)['gender_id'];
-
         // Verificar si los intereses necesitan actualizarse
-        if ($interested_in_value != $interested_in) {
-            // Preparar la consulta SQL para actualizar los intereses en la tabla twn_interested_in
-            $sqlUpdateInterestedIn = "UPDATE twn_interested_in SET interested_in = ? WHERE user_id = ?";
-
-            // Preparar la declaración para actualizar los intereses
+        $existingInterestedIn = $this->getInterestedIn($id);
+        if ($existingInterestedIn && $existingInterestedIn['gender_id'] != $interested_in) {
+            // Actualizar los intereses existentes
+            $sqlUpdateInterestedIn = "UPDATE twn_interested_in SET gender_id = ? WHERE user_id = ?";
             $stmtUpdateInterestedIn = $this->conn->prepare($sqlUpdateInterestedIn);
-
-            // Vincular los parámetros para actualizar los intereses
             $stmtUpdateInterestedIn->bind_param("si", $interested_in, $id);
-
-            // Ejecutar la consulta para actualizar los intereses
             $stmtUpdateInterestedIn->execute();
 
-            // Verificar si la actualización de los intereses fue exitosa
             if ($stmtUpdateInterestedIn->affected_rows > 0) {
                 $msg .= "Actualización de intereses exitosa. ";
             }
 
             $stmtUpdateInterestedIn->close();
+        } elseif (!$existingInterestedIn) {
+            // Insertar nuevos intereses
+            $sqlInsertInterestedIn = "INSERT INTO twn_interested_in (user_id, gender_id) VALUES (?, ?)";
+            $stmtInsertInterestedIn = $this->conn->prepare($sqlInsertInterestedIn);
+            $stmtInsertInterestedIn->bind_param("is", $id, $interested_in);
+            $stmtInsertInterestedIn->execute();
+
+            if ($stmtInsertInterestedIn->affected_rows > 0) {
+                $msg .= "Inserción de intereses exitosa. ";
+            }
+
+            $stmtInsertInterestedIn->close();
         }
 
         // Verificar si no se realizó ninguna actualización
@@ -493,8 +646,13 @@ class UserModel
         // Obtener la fila de resultado
         $row = $result->fetch_assoc();
 
-        // Obtener la ruta de la imagen anterior
-        $rutaImagenAnterior = $row['link'];
+        // Verificar si la columna 'link' existe en la fila
+        if (isset($row['link']) && $row['link'] !== null) {
+            $rutaImagenAnterior = $row['link'];
+        } else {
+            // Manejo de caso cuando no hay foto de perfil
+            $rutaImagenAnterior = '';
+        }
 
         // Cerrar la declaración y el resultado
         $stmt->close();

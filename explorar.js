@@ -9,7 +9,7 @@ function loadRandomProfile() {
       if (response.success) {
         var profile = response.profile;
         $(".card-img-top").attr("src", profile.link);
-        $("#name").text(profile.first_name + " " + profile.last_name);
+        $("#pfname").text(profile.first_name + " " + profile.last_name);
         $("#gender").text(profile.gender_name);
         $("#description").text(profile.description);
         $("#hobbies").text(profile.hobbies);

@@ -19,7 +19,8 @@ if ($randomProfile) {
         'last_name' => $randomProfile['last_name'],
         'gender_id' => $randomProfile['gender_id'],
         'gender_name' => $randomProfile['gender_name'],
-        'description' => $randomProfile['description']
+        'description' => $randomProfile['description'],
+        'hobbies' => $randomProfile['hobbies']
     );
 
     // Devolver el perfil como respuesta en formato JSON
