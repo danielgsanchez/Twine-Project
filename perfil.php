@@ -368,7 +368,7 @@ $genders = getGenders();
                     </div>
                     <div class="mb-3">
                         <label for="conf-password" class="form-label">Confirmar nueva contraseña:</label>
-                        <input type="password" id="conf-password" name="conf-password" class="form-control" required>
+                        <input type="password" id="conf-password" name="conf-password" class="form-control">
                         <small id="conf-password-error" class="error-text"></small>
                     </div>
                     <hr />

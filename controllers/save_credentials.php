@@ -51,10 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         }
     }
+    
     if ($newEmail != $profileInfo["email"]){
         $emailUpd = $userModel->updateEmail($_SESSION["user_id"], $newEmail);
         if ($emailUpd == 1){
             $msg .= "Correo cambiado con éxito.";
+            $_SESSION["email"] = $newEmail;
             header("Location: ../perfil.php?msg=".urlencode($msg));
             exit();
         } else {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 12-06-2023 a las 17:10:44
+-- Tiempo de generación: 13-06-2023 a las 09:52:16
 -- Versión del servidor: 10.4.25-MariaDB
 -- Versión de PHP: 8.1.10
 
@@ -33,37 +33,6 @@ CREATE TABLE `twn_blocks` (
   `user2_id` int(11) NOT NULL COMMENT 'Usuario bloqueado',
   `created_at` datetime NOT NULL
 ) ;
-
---
--- Volcado de datos para la tabla `twn_blocks`
---
-
-INSERT INTO `twn_blocks` (`id`, `user1_id`, `user2_id`, `created_at`) VALUES
-(1, 20, 44, '2023-01-05 08:15:30'),
-(2, 5, 46, '2023-02-12 13:45:20'),
-(3, 16, 45, '2023-03-21 17:30:45'),
-(4, 22, 36, '2023-04-02 09:25:10'),
-(5, 2, 38, '2023-05-10 14:50:55'),
-(6, 15, 33, '2023-06-18 18:35:05'),
-(7, 9, 28, '2023-07-06 10:40:25'),
-(8, 1, 41, '2023-08-15 15:55:15'),
-(9, 18, 33, '2023-09-23 19:20:40'),
-(10, 13, 34, '2023-10-09 11:05:50'),
-(11, 25, 40, '2023-11-26 16:30:35'),
-(12, 20, 26, '2023-12-30 20:45:00'),
-(13, 24, 45, '2023-01-15 12:10:20'),
-(14, 18, 28, '2023-02-25 17:35:30'),
-(15, 1, 42, '2023-03-14 09:40:45'),
-(16, 10, 34, '2023-04-28 14:05:55'),
-(17, 21, 25, '2023-06-07 18:50:10'),
-(18, 9, 41, '2023-07-27 10:55:40'),
-(19, 3, 36, '2023-08-08 16:20:50'),
-(20, 23, 38, '2023-09-17 20:35:15'),
-(21, 2, 27, '2023-10-31 12:30:25'),
-(22, 6, 36, '2023-11-10 15:55:35'),
-(23, 24, 37, '2023-12-21 08:00:00'),
-(24, 18, 34, '2023-01-25 13:25:10'),
-(25, 19, 43, '2023-03-03 17:10:45');
 
 -- --------------------------------------------------------
 
@@ -246,58 +215,12 @@ CREATE TABLE `twn_matches` (
 --
 
 INSERT INTO `twn_matches` (`id`, `user1_id`, `user2_id`, `timestamp`) VALUES
-(1, 15, 46, '0000-00-00'),
-(2, 6, 42, '0000-00-00'),
-(3, 15, 30, '0000-00-00'),
-(4, 2, 40, '0000-00-00'),
-(5, 22, 42, '0000-00-00'),
-(6, 19, 35, '0000-00-00'),
-(7, 14, 46, '0000-00-00'),
-(8, 1, 25, '0000-00-00'),
-(9, 4, 43, '0000-00-00'),
-(10, 7, 44, '0000-00-00'),
-(11, 21, 40, '0000-00-00'),
-(12, 21, 38, '0000-00-00'),
-(13, 9, 44, '0000-00-00'),
-(14, 3, 35, '0000-00-00'),
-(15, 14, 43, '0000-00-00'),
-(16, 7, 43, '0000-00-00'),
-(17, 7, 32, '0000-00-00'),
-(18, 9, 46, '0000-00-00'),
-(19, 11, 38, '0000-00-00'),
-(20, 24, 26, '0000-00-00'),
-(21, 13, 36, '0000-00-00'),
-(22, 13, 39, '0000-00-00'),
-(23, 3, 41, '0000-00-00'),
-(24, 10, 31, '0000-00-00'),
-(25, 16, 31, '0000-00-00'),
-(26, 3, 25, '0000-00-00'),
-(27, 5, 27, '0000-00-00'),
-(28, 10, 39, '0000-00-00'),
-(29, 15, 44, '0000-00-00'),
-(30, 8, 37, '0000-00-00'),
-(31, 12, 35, '0000-00-00'),
-(32, 14, 37, '0000-00-00'),
-(33, 14, 38, '0000-00-00'),
-(34, 25, 38, '0000-00-00'),
-(35, 20, 34, '0000-00-00'),
-(36, 15, 25, '0000-00-00'),
-(37, 4, 42, '0000-00-00'),
-(38, 14, 36, '0000-00-00'),
-(39, 7, 38, '0000-00-00'),
-(40, 8, 39, '0000-00-00'),
-(41, 16, 39, '0000-00-00'),
-(42, 2, 32, '0000-00-00'),
-(43, 6, 46, '0000-00-00'),
-(44, 23, 45, '0000-00-00'),
-(45, 9, 34, '0000-00-00'),
-(46, 23, 41, '0000-00-00'),
-(47, 25, 27, '0000-00-00'),
-(48, 5, 28, '0000-00-00'),
-(49, 13, 45, '0000-00-00'),
-(50, 10, 32, '0000-00-00'),
-(79, 1, 22, '0000-00-00'),
-(80, 22, 1, '0000-00-00');
+(83, 1, 27, '0000-00-00'),
+(84, 27, 1, '0000-00-00'),
+(85, 1, 44, '0000-00-00'),
+(86, 44, 1, '0000-00-00'),
+(87, 1, 22, '0000-00-00'),
+(88, 22, 1, '0000-00-00');
 
 -- --------------------------------------------------------
 
@@ -330,7 +253,7 @@ CREATE TABLE `twn_reports` (
 --
 
 INSERT INTO `twn_reports` (`id`, `user1_id`, `user2_id`, `reason`) VALUES
-(3, 27, 1, 'ssasdasd');
+(3, 27, 1, 'foto de perfil inadecuada');
 
 -- --------------------------------------------------------
 
@@ -358,7 +281,7 @@ CREATE TABLE `twn_users` (
 --
 
 INSERT INTO `twn_users` (`id`, `first_name`, `last_name`, `gender_id`, `description`, `screen_name`, `email`, `gold_sub`, `password`, `is_banned`, `confirmation_code`, `hobbies`) VALUES
-(1, 'Wye', 'Skipsey', 'M', 'Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero.\r\n\r\nNullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh.\r\n\r\nIn quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.', 'wskipsey0', 'wskipsey0@uol.com.br', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Fútbol, Lectura, Cocina, Viajes'),
+(1, 'Wye', 'Skipsey', 'M', 'Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero.\r\n\r\nNullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh.\r\n\r\nIn quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.', 'wskipsey0', 'wskipsey0@uol.com.br', 0, '4f204f9416f011cb71647a07cb3a7ed7', 0, NULL, 'Fútbol, Lectura, Cocina, Viajes'),
 (2, 'Robin', 'Gradwell', 'M', 'Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.\r\n\r\nFusce consequat. Nulla nisl. Nunc nisl.\r\n\r\nDuis bibendum, felis sed interdum venenatis, turpis enim blandit mi, in porttitor pede justo eu massa. Donec dapibus. Duis at velit eu est congue elementum.', 'rgradwell1', 'rgradwell1@bing.com', 0, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Pintura, Jardinería, Fotografía, Senderismo'),
 (3, 'Janaye', 'Batho', 'F', 'Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis.\n\nFusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem.\n\nSed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus.', 'jbatho2', 'jbatho2@is.gd', 1, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Bailar, Cine, Yoga, Ajedrez '),
 (4, 'Jacinta', 'Pitkeathly', 'F', 'Nulla ut erat id mauris vulputate elementum. Nullam varius. Nulla facilisi.\n\nCras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.\n\nQuisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.', 'jpitkeathly3', 'jpitkeathly3@artisteer.com', 1, '81dc9bdb52d04dc20036dbd8313ed055', 0, NULL, 'Música, Deportes acuáticos, Videojuegos, Excursionismo '),
@@ -595,7 +518,7 @@ ALTER TABLE `twn_chat_msg`
 -- AUTO_INCREMENT de la tabla `twn_interested_in`
 --
 ALTER TABLE `twn_interested_in`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT de la tabla `twn_likes`
@@ -613,7 +536,7 @@ ALTER TABLE `twn_matches`
 -- AUTO_INCREMENT de la tabla `twn_rejects`
 --
 ALTER TABLE `twn_rejects`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
 
 --
 -- AUTO_INCREMENT de la tabla `twn_reports`
@@ -631,7 +554,7 @@ ALTER TABLE `twn_users`
 -- AUTO_INCREMENT de la tabla `twn_user_photo`
 --
 ALTER TABLE `twn_user_photo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- Restricciones para tablas volcadas
