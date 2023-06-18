@@ -80,7 +80,6 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                         getMessages(matchUserID);
                     } else {
                         alert("Error al enviar el mensaje. Inténtalo de nuevo.");
-                        console.log(data);
                     }
                 },
                 error: function() {
@@ -126,7 +125,6 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                     // Actualizar el div con la foto de perfil y el nombre completo
                     var profileData = JSON.parse(profile); // Convertir la respuesta JSON a objeto
                     var profile = profileData[0];
-                    console.log(profile);
                     if (profile && profile.first_name) {
                         $("#userProfileImage").html("<img src='" + profile.link + "'>");
                         $("#userProfileName").html("<strong>" + profile.first_name + " " + profile.last_name + "</strong>");
@@ -156,7 +154,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             $("#matchedUsers").on("change", function() {
                 // Obtener el ID del usuario seleccionado
                 selectedUserID = $(this).val();
-                selectedChatID = $(this).find("option:selected").data("chatid");
+                var selectedChatID = $(this).find("option:selected").data("chatid");
                 getProfile(selectedUserID);
 
                 // Mostrar el div de chat

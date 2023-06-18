@@ -11,7 +11,7 @@ require_once "../models/user_model.php";
 $userModel = new UserModel($conn);
 
 $userId = $_SESSION["user_id"];
-// Verificar si el índice "matchUserID" existe en $_GET
+// Verificar si matchUserID existe en $_GET
 if (isset($_GET["matchUserID"])) {
     $matchUserID = $_GET["matchUserID"];
     $matchUserProfile = $userModel->getFullProfile($matchUserID);
@@ -34,12 +34,12 @@ function getChatMessages($conn, $userId, $matchUserID)
             FROM twn_chat_msg AS m
             INNER JOIN twn_chats AS c ON m.chat_id = c.id
             INNER JOIN twn_users AS u ON m.sender_id = u.id
-            WHERE (c.user1_id = ? AND c.user2_id = ?)
+            WHERE (c.user1_id = ? AND c.user2_id = ? OR c.user1_id = ? AND c.user2_id = ?)
                 AND (m.sender_id = ? OR m.sender_id = ?)
             ORDER BY m.timestamp ASC";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iiii", $userId, $matchUserID, $userId, $matchUserID);
+    $stmt->bind_param("iiiiii", $userId, $matchUserID, $matchUserID, $userId, $userId, $matchUserID);
     $stmt->execute();
     $result = $stmt->get_result();
 
