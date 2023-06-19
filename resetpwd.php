@@ -12,7 +12,7 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
   // Realizar la validación de la contraseña
   if (strlen($newPwd) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d).+$/', $newPwd) || $newPwd !== $confNewPwd) {
     // La contraseña no cumple los requisitos o los campos de contraseña no coinciden
-    echo "Error: La contraseña no cumple los requisitos o los campos de contraseña no coinciden.";
+    echo "La contraseña no cumple los requisitos o los campos de contraseña no coinciden.";
   } else {
     // Los campos de contraseña son válidos, proceder con la actualización
 
@@ -22,16 +22,33 @@ if ((!empty($_REQUEST["newPwd"])) && (!empty($_REQUEST["confNewPwd"]))) {
     // Realizar la actualización en la base de datos
     $email = $_REQUEST["email"];
 
-    // Construir la consulta de actualización
-    $sql = "UPDATE twn_users SET password='$hashedPwd' WHERE email='$email'";
+    // Obtener la contraseña actual del usuario
+    $email = $_REQUEST["email"];
+    $sql = "SELECT password FROM twn_users WHERE email='$email'";
+    $result = $conn->query($sql);
 
-    // Ejecutar la consulta
-    if ($conn->query($sql) === TRUE) {
-      $msg = "Contraseña actualizada con éxito.";
-      $sql = "UPDATE twn_users SET confirmation_code = NULL WHERE email = '$email'";
-      $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      $currentPwd = $row["password"];
+
+      if ($hashedPwd === $currentPwd) {
+        echo "La nueva contraseña no puede ser igual a la contraseña actual.";
+      } else {
+        // La nueva contraseña no es igual a la actual, proceder con la actualización
+
+        // Realizar la actualización en la base de datos
+        $sql = "UPDATE twn_users SET password='$hashedPwd' WHERE email='$email'";
+
+        if ($conn->query($sql) === TRUE) {
+          $msg = "Contraseña actualizada con éxito.";
+          $sql = "UPDATE twn_users SET confirmation_code = NULL WHERE email = '$email'";
+          $result = $conn->query($sql);
+        } else {
+          $msg = "Error al actualizar la contraseña.";
+        }
+      }
     } else {
-      $msg = "Error al actualizar la contraseña.";
+      echo "No se pudo obtener la contraseña actual del usuario.";
     }
 
     $conn->close();

@@ -7,7 +7,6 @@ if (!empty($_SESSION["email"])) {
     exit;
 }
 
-require_once 'models/conn.php';
 require_once 'models/user_model.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,18 +19,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           var successBox = document.createElement("div");
           successBox.classList.add("success-box");
           successBox.textContent = "' . $msg['msg'] . '";
-
+  
           var closeButton = document.createElement("button");
           closeButton.classList.add("close-button");
           closeButton.innerHTML = "&#10006;";
-
+  
           successBox.appendChild(closeButton);
           document.body.appendChild(successBox);
-
+  
           setTimeout(function() {
             successBox.style.display = "none";
           }, 3000);
-
+  
           closeButton.addEventListener("click", function() {
             successBox.style.display = "none";
           });
@@ -44,18 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               var errorBox = document.createElement("div");
               errorBox.classList.add("error-box");
               errorBox.textContent = "' . $msg['msg'] . '";
-
+  
               var closeButton = document.createElement("button");
               closeButton.classList.add("close-button");
               closeButton.innerHTML = "&#10006;";
-
+  
               errorBox.appendChild(closeButton);
               document.body.appendChild(errorBox);
-
+  
               setTimeout(function() {
                 errorBox.style.display = "none";
               }, 3000);
-
+  
               closeButton.addEventListener("click", function() {
                 errorBox.style.display = "none";
               });

@@ -268,7 +268,7 @@ $genders = getGenders();
             <li>
                 <a href="index.php">
                     <span class="icon"><i class="fas fa-home"></i></span>
-                    <span class="text">Home</span>
+                    <span class="text">Principal</span>
                 </a>
             </li>
             <li>
@@ -289,7 +289,7 @@ $genders = getGenders();
                             <?php if (empty($profileData[0]["link"])) : ?>
                                 <i class="fas fa-user-circle profile-icon-large"></i>
                             <?php else : ?>
-                                <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto;">
+                                <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto; max-width: 256px; max-height: 256px;">
                             <?php endif; ?>
                             <br /><input type="file" id="profile-image" name="profile-image">
                         </div>

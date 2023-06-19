@@ -164,6 +164,7 @@ class UserModel
         $email = mysqli_real_escape_string($this->conn, $email);
         $pw = mysqli_real_escape_string($this->conn, $pw);
         $pwConfirm = mysqli_real_escape_string($this->conn, $pwConfirm);
+        $msg = "";
 
         if (strlen($pw) < 8 || !preg_match('/^(?=.*[A-Z])(?=.*\d)/', $pw)) {
             $msg = ['successful' => false, 'msg' => 'La contraseña debe tener al menos 8 caracteres y contener al menos una mayúscula y un número.'];
@@ -191,7 +192,7 @@ class UserModel
             // Ejecutar la consulta
             if ($stmt->execute()) {
                 // Registro exitoso
-                $msg = ['success' => true, 'msg' => 'Registro exitoso'];
+                $msg = ['successful' => true, 'msg' => 'Registro exitoso'];
                 return $msg;
             } else {
                 $msg = ['successful' => false, 'msg' => "Error al registrar el usuario."];
@@ -223,6 +224,32 @@ class UserModel
             }
 
             return $rejectedProfiles;
+        } else {
+            return [];
+        }
+
+        $this->closeConnection();
+    }
+
+    public function getAcceptedProfiles($userId)
+    {
+        // Consulta SQL para obtener la lista de IDs de perfiles aceptados por el usuario
+        $query = "SELECT user2_id FROM twn_matches WHERE user1_id = $userId";
+
+        // Ejecutar la consulta SQL y obtener el resultado
+        $result = mysqli_query($this->conn, $query);
+
+        // Verificar si se obtuvo un resultado
+        if ($result && mysqli_num_rows($result) > 0) {
+            // Almacenar los IDs de los perfiles aceptados en un array
+            $acceptedProfiles = [];
+
+            // Iterar sobre los resultados y añadir los IDs a la lista
+            while ($row = mysqli_fetch_assoc($result)) {
+                $acceptedProfiles[] = $row['user2_id'];
+            }
+
+            return $acceptedProfiles;
         } else {
             return [];
         }
@@ -269,6 +296,9 @@ class UserModel
         // Obtener los perfiles rechazados o bloqueados por el usuario
         $rejectedProfiles = $this->getRejectedProfiles($userId);
 
+        // Obtener los perfiles aceptados por el usuario
+        $acceptedProfiles = $this->getAcceptedProfiles($userId);
+
         // Verificar si el usuario tiene un registro en la tabla twn_interested_in
         $interestedInGenderId = $this->hasInterestedIn($userId);
 
@@ -276,7 +306,7 @@ class UserModel
         $userHobbies = $this->hasHobbies($userId);
 
         // Consultar perfiles aleatorios con filtros
-        $randomProfile = $this->getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles);
+        $randomProfile = $this->getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles, $acceptedProfiles);
 
         // Si no se encontraron perfiles o todos los perfiles están rechazados/bloqueados, intentar de nuevo hasta 3 veces
         if ($randomProfile === null && $attempt < 3) {
@@ -291,7 +321,7 @@ class UserModel
         return $randomProfile;
     }
 
-    private function getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles)
+    private function getRandomProfileWithFilters($userId, $interestedInGenderId, $userHobbies, $rejectedProfiles, $acceptedProfiles)
     {
         // Construir consulta SQL para obtener perfiles aleatorios con filtros
         $randomProfileQuery = "SELECT u.*, p.link, g.name AS gender_name
@@ -323,8 +353,15 @@ class UserModel
             $numHobbies = count($hobbiesArray);
 
             for ($i = 0; $i < $numHobbies; $i++) {
-                $randomProfileQuery .= "u.hobbies LIKE ?";
-                $params[] = "%" . $hobbiesArray[$i] . "%";
+                $cleanedHobby = mb_strtolower(trim($hobbiesArray[$i]));
+                $cleanedHobby = str_replace(
+                    ['á', 'é', 'í', 'ó', 'ú', 'ü'],
+                    ['a', 'e', 'i', 'o', 'u', 'u'],
+                    $cleanedHobby
+                );
+
+                $randomProfileQuery .= "LOWER(u.hobbies) LIKE ?";
+                $params[] = "%" . $cleanedHobby . "%";
                 $paramTypes .= "s";
 
                 if ($i < $numHobbies - 1) {
@@ -344,9 +381,12 @@ class UserModel
         $stmtRandomProfile->execute();
         $randomProfileResult = $stmtRandomProfile->get_result();
 
-        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados
+        // Combinar listas de perfiles rechazados/bloqueados y aceptados
+        $blockedAndAcceptedProfiles = array_merge($rejectedProfiles, $acceptedProfiles);
+
+        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados y aceptados
         while ($row = $randomProfileResult->fetch_assoc()) {
-            if (!in_array($row['id'], $rejectedProfiles)) {
+            if (!in_array($row['id'], $blockedAndAcceptedProfiles)) {
                 return $row;
             }
         }
@@ -357,8 +397,12 @@ class UserModel
 
     private function getRandomProfileWithoutHobbies($userId, $interestedInGenderId, $attempt = 0)
     {
-        // Obtener los perfiles rechazados o bloqueados por el usuario
+        // Obtener los perfiles rechazados, bloqueados y aceptados por el usuario
         $rejectedProfiles = $this->getRejectedProfiles($userId);
+        $acceptedProfiles = $this->getAcceptedProfiles($userId);
+
+        // Combinar listas de perfiles rechazados/bloqueados y aceptados
+        $blockedAndAcceptedProfiles = array_merge($rejectedProfiles, $acceptedProfiles);
 
         // Consulta SQL para obtener perfiles aleatorios sin coincidencia en hobbies
         $randomProfileQuery = "SELECT u.*, p.link, g.name AS gender_name
@@ -394,8 +438,8 @@ class UserModel
         // Obtener el número de perfiles encontrados
         $numProfiles = $randomProfileResult->num_rows;
 
-        // Si no se encontraron perfiles o todos los perfiles están rechazados/bloqueados, intentar de nuevo hasta 3 veces
-        if ($numProfiles == 0 || $numProfiles == count($rejectedProfiles)) {
+        // Si no se encontraron perfiles o todos los perfiles están rechazados/bloqueados/aceptados, intentar de nuevo hasta 3 veces
+        if ($numProfiles == 0 || $numProfiles == count($blockedAndAcceptedProfiles)) {
             if ($attempt < 3) {
                 return $this->getRandomProfileWithoutHobbies($userId, $interestedInGenderId, $attempt + 1);
             } else {
@@ -403,10 +447,10 @@ class UserModel
             }
         }
 
-        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados
+        // Obtener un perfil aleatorio que no esté en la lista de perfiles rechazados/bloqueados/aceptados
         $randomProfile = null;
         while ($row = $randomProfileResult->fetch_assoc()) {
-            if (!in_array($row['id'], $rejectedProfiles)) {
+            if (!in_array($row['id'], $blockedAndAcceptedProfiles)) {
                 $randomProfile = $row;
                 break;
             }
