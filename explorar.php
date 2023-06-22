@@ -15,7 +15,6 @@ require_once "models/user_model.php";
 $userModel = new UserModel($conn);
 $userModel->checkBan();
 $goldSub = $userModel->getGold($_SESSION["user_id"]);
-
 $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
 
 ?>
