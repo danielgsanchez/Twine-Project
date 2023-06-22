@@ -180,8 +180,10 @@ $genders = getGenders();
         }
 
         .profile-image {
-            border-radius: 128px;
             max-width: 256px;
+            max-height: 256px;
+            display: block;
+            margin: 0 auto;
         }
 
         .error-text {
@@ -220,9 +222,8 @@ $genders = getGenders();
             }
 
             .profile-image {
-                border-radius: 128px;
-                max-width: 100%;
-                max-height: 100%;
+                max-width: 75%;
+                max-height: 75%;
                 width: auto;
                 height: auto;
             }
@@ -289,7 +290,7 @@ $genders = getGenders();
                             <?php if (empty($profileData[0]["link"])) : ?>
                                 <i class="fas fa-user-circle profile-icon-large"></i>
                             <?php else : ?>
-                                <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image" style="display: block; margin: 0 auto; max-width: 256px; max-height: 256px;">
+                                <img src="<?php echo $profileData[0]["link"] ?>" alt="Imagen de perfil" class="profile-image img-fluid rounded">
                             <?php endif; ?>
                             <br /><input type="file" id="profile-image" name="profile-image">
                         </div>

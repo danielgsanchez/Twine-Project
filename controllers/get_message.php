@@ -21,7 +21,14 @@ if (isset($_GET["matchUserID"])) {
 
     // Mostrar los mensajes
     foreach ($messages as $message) {
-        echo '<div><strong>' . $message["username"] . ':</strong> ' . $message["msg_text"] . '</div>';
+        $messageClass = ($message['sender_id'] == $userId) ? 'message-sent' : 'message-received';
+        $messageAlignment = ($message['sender_id'] == $userId) ? 'text-right' : 'text-left';
+    
+        echo '<div class="message ' . $messageClass . '">';
+        echo '<div class="message-content ' . $messageAlignment . '">';
+        echo '<strong>' . $message["username"] . ':</strong> ' . $message["msg_text"];
+        echo '</div>';
+        echo '</div>';
     }
 } else {
     echo "El índice 'matchUserID' no está presente en la matriz \$_GET.";

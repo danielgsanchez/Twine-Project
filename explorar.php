@@ -251,7 +251,7 @@ $randomProfile = $userModel->getRandomProfile($_SESSION["user_id"]);
                     <div class="card-deck">
                         <?php if ($randomProfile) : ?>
                             <div class="card">
-                                <img style="display: block; margin: 0 auto;" src="<?php echo $randomProfile['link'] ? $randomProfile['link'] : 'chat_imgs/user_pics/default.png'; ?>" class="card-img-top" alt="Foto de perfil">
+                                <img style="display: block; margin: 0 auto; object-fit:cover" src="<?php echo $randomProfile['link'] ? $randomProfile['link'] : 'chat_imgs/user_pics/default.png'; ?>" class="card-img-top" alt="Foto de perfil">
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <strong>

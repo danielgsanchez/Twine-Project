@@ -30,6 +30,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="text/javascript" src="helpers/jquery-3.6.3.js"></script>
     <script type="text/javascript" src="helpers/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Twine - Chats</title>
     <script>
         // Variable global para almacenar el ID del usuario seleccionado
@@ -55,7 +56,7 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             if (selectedUser !== "") {
                 sendMessage(selectedUser);
             } else {
-                alert("No has seleccionado un usuario. No puedes enviar mensajes.");
+                Swal.fire("Error", "No has seleccionado un usuario. No puedes enviar mensajes.", "error");
             }
         }
 
@@ -79,11 +80,11 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                         // Actualizar los mensajes mostrados
                         getMessages(matchUserID);
                     } else {
-                        alert("Error al enviar el mensaje. Inténtalo de nuevo.");
+                        Swal.fire("Error", "Error al enviar el mensaje. Inténtalo de nuevo.", "error");
                     }
                 },
                 error: function() {
-                    alert("Error al enviar el mensaje. Inténtalo de nuevo.");
+                    Swal.fire("Error", "Error al enviar el mensaje. Inténtalo de nuevo.", "error");
                 }
             });
         }
@@ -92,6 +93,13 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
         function sendReport() {
             var userID = $("#reportBtn").data('userid');
             var reason = $('#reason').val();
+
+            if (reason.trim() === "") {
+                Swal.fire("Error", "El campo de motivo no puede estar vacío.", "error");
+                return; // Detiene el envío del reporte
+            }
+
+            // Realizar la solicitud AJAX solo si el campo no está vacío
             $.ajax({
                 url: "controllers/send_report.php",
                 method: "POST",
@@ -101,14 +109,16 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                 },
                 success: function(data) {
                     if (data === "report_sent") {
-                        alert("El reporte ha sido enviado.");
+                        Swal.fire("Reporte enviado", "El reporte ha sido enviado.", "success").then(function() {
+                            // Cerrar el modal después de mostrar el mensaje de éxito
+                            $('#reportModal').modal('hide');
+                        });
                     } else {
-                        alert("Error al enviar el reporte. Inténtalo de nuevo.");
-                        console.log(data);
+                        Swal.fire("Error", "Error al enviar el reporte. Inténtalo de nuevo.", "error");
                     }
                 },
                 error: function() {
-                    alert("Error al enviar el reporte. Inténtalo de nuevo.");
+                    Swal.fire("Error", "Error al enviar el reporte. Inténtalo de nuevo.", "error");
                 }
             });
         }
@@ -310,20 +320,35 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
             margin-bottom: 10px;
         }
 
-        .messages {
-            margin-bottom: 20px;
-            padding: 20px;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            max-height: 300px;
-            overflow-y: auto;
+        .message {
+            margin-bottom: 10px;
         }
 
-        .messages .message {
+        .message-content {
             padding: 10px;
-            margin-bottom: 10px;
             border-radius: 5px;
+        }
+
+        /* Estilos para los mensajes enviados por el usuario logeado */
+        .message-sent {
+            background-color: #e2f0fd;
+            color: #333;
+        }
+
+        /* Estilos para los mensajes recibidos del usuario matcheado */
+        .message-received {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Alineación a la izquierda */
+        .text-left {
+            text-align: left;
+        }
+
+        /* Alineación a la derecha */
+        .text-right {
+            text-align: right;
         }
 
         .chat-form {
@@ -429,18 +454,18 @@ $matches = $userModel->getMatches($_SESSION["user_id"]);
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="reason">Razón del reporte:</label>
-                        <textarea class="form-control" id="reason" rows="3" placeholder="Escribe la razón del reporte"></textarea>
+                        <textarea class="form-control" id="reason" rows="3" placeholder="Escribe la razón del reporte" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button id="submitReportBtn" class="btn btn-danger" onclick="sendReport()">Enviar Reporte</button>
+                    <button id="submitReportBtn" class="btn btn-danger" onclick="sendReport();">Enviar Reporte</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="content">
+    <div class=" content">
         <div class="container">
             <div class="row">
                 <div class="col-md-6 offset-md-3">

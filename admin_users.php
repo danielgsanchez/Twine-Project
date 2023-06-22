@@ -225,7 +225,7 @@ $users = $adminModel->getUsersWithPhotos();
                         <tr>
                             <td style="align-items: center; justify-content: center; display:flex">
                                 <?php if ($user['photo_link']) : ?>
-                                    <img src="<?php echo $user['photo_link']; ?>" alt="Foto de perfil">
+                                    <img src="<?php echo $user['photo_link']; ?>" style="width: 256px; height: 256px; margin:0" alt="Foto de perfil">
                                 <?php else : ?>
                                     <i class="fas fa-user-circle fa-5x"></i>
                                 <?php endif; ?>
