@@ -48,10 +48,10 @@ if ($result->num_rows > 0) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ii", $userId, $matchId);
     $stmt->execute();
-    
+
     // Obtener el ID del chat recién creado
     $chatId = $stmt->insert_id;
-    
+
     // Guardar el mensaje en la tabla de mensajes
     $sql = "INSERT INTO twn_chat_msg (id, sender_id, msg_text, time_sent) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);

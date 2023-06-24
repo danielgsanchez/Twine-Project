@@ -23,7 +23,7 @@ if (isset($_GET["matchUserID"])) {
     foreach ($messages as $message) {
         $messageClass = ($message['sender_id'] == $userId) ? 'message-sent' : 'message-received';
         $messageAlignment = ($message['sender_id'] == $userId) ? 'text-right' : 'text-left';
-    
+
         echo '<div class="message ' . $messageClass . '">';
         echo '<div class="message-content ' . $messageAlignment . '">';
         echo '<strong>' . $message["username"] . ':</strong> ' . $message["msg_text"];
