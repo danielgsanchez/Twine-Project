@@ -464,7 +464,7 @@ class UserModel
     function addMatch($userId, $profileId)
     {
         // Verificar si ya existe un registro de coincidencia entre los usuarios
-        $query = "SELECT id FROM twn_matches WHERE (user1_id = $userId AND user2_id = $profileId) OR (user1_id = $profileId AND user2_id = $userId)";
+        $query = "SELECT id FROM twn_matches WHERE (user1_id = $userId AND user2_id = $profileId)";
         $result = mysqli_query($this->conn, $query);
 
         // Si el resultado contiene filas, significa que ya existe un registro de coincidencia
