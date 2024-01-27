@@ -1,4 +1,5 @@
 # Twine
+Proyecto de fin de grado para el CFGS de DAW.
 
 La contraseña para entrar con cualquiera de los 50 usuarios de prueba es 1234.
 
