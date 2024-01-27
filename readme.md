@@ -1,5 +1,5 @@
 # Twine
-Proyecto de fin de grado para el CFGS de DAW.
+Proyecto de fin de grado para el CFGS de DAW (curso 2022/2023).
 
 La contraseña para entrar con cualquiera de los 50 usuarios de prueba es 1234.
 
